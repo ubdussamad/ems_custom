@@ -9,8 +9,6 @@
 import maths
 
 
-
-
 def main ( *args , **kwargs ) :
     # Will be using some C-style Control for ease in debugging
     return(0)

@@ -16,8 +16,8 @@ class imm ( object ):
         #defined by the inventory id
 	def parse_log ( self ):
                 try:
-		        with open('ivn.log','r') as f_obj:
-                                log = f_obj.read()
+                        with open('ivn.log','r') as f_obj:
+                                log = f_obj.read().strip('\n')
                                 f_obj.close()
                                 log = log.split('\n')
                                 log = [i.split('%sep') for i in log]
@@ -31,32 +31,52 @@ class imm ( object ):
                 for i in self.data:
                         print(i)
 
-	def update ( self , key , field ):
+	def update ( self , key , data , dec_qty = False , qty=0):
+                #Data is a list contaning all fields of a specific item
+                #The problem is to form data
                 self.parse_log()
-
-                if field == 0:
-                        if debug:print("Editing PID")
-                        return
-                elif field == 1:
-                        if debug:print("Editing Amount")
-                        return
-                elif field == 2:
-                        if debug:print("Editing Unit")
-                        return
-                elif field == 3:
-                        if debug:print("Editing Rate")
-                        return
-                elif field == 4:
-                        if debug:print("Editing Description")
-                        return
-                else:
-                        print("Invalid key")
+                print (key)
+                index = None
+                for i in self.data:
+                        if i[0] == key:
+                                index = self.data.index(i)
+                if index == None:
+                        print("Invaild key!")
                         return(-1)
-
+                elif dec_qty: #Special Quantity Decremnt Routine for faster processing
+                        if float(self.data[index][1]) < qty:
+                                print("STOCK PROBLEM")
+                                return(-2)
+                        self.data[index][1] = str(float(self.data[index][1])-qty)
+                else:
+                        self.data[index] = data
+                self.relog()
+        def relog ( self ):
+                print("Re Logging")
+                try:
+		        with open('ivn.log','w') as f_obj:
+                                for i in self.data:
+                                        line = str('%sep'.join(i)+'\n')
+                                        f_obj.write(line)
+                                f_obj.flush()
+                                f_obj.close()
+                                if debug and verbose:print("Update File File")
+                except Excecption as err:
+                        print("File Error, Bad file.! : %s"%err)
+                        exit()
+                
 	def search ( self , key):
-		# Will be done after planing data format
-		return
-
+		# Returns a subsetset of self.data contaning the keywords
+                # Return a list of lists containing only names whic matcvh it
+                self.parse_log()
+		if key == '':
+                        return self.data
+                elif key:
+                        tmp = filter(None,[i if key.lower() in i[0].lower() else None for i in self.data])
+                        return(tmp)
+                else:
+                        return self.data
+        
 	def check_out( self , data ):
 		# Will Communicate with LMM and possibly CMM
 		# TODO:
@@ -72,9 +92,5 @@ class imm ( object ):
 some  = imm ( 112 )
 some.parse_log()
 some.test_print()
-some.update("RED_NORMAL" , 1 )
-some.update("RED_NORMAL" , 2 )
-some.update("RED_NORMAL" , 3 )
-some.update("RED_NORMAL" , 4 )
-some.update("RED_NORMAL" , 5 )
-some.update("RED_NORMAL" , 0 )
+d  =['BLUE_NORMAL', '50', 'Kg', '15', 'Just a blue color']
+some.update("BLUE_NORMAL" , d)

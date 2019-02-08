@@ -36,6 +36,7 @@ class imm ( object ):
 
                 if field == 0:
                         if debug:print("Editing PID")
+                        index = [
                         return
                 elif field == 1:
                         if debug:print("Editing Amount")

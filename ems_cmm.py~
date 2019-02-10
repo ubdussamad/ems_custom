@@ -6,7 +6,7 @@
 import datetime
 debug = 1
 verbose = 0
-class imm ( object ):
+class cmm ( object ):
 	def __init__ ( self , id):
 		self.i_id = id # Inventory Id 
 		self.i_name = None # Inventory Name
@@ -16,7 +16,7 @@ class imm ( object ):
         #defined by the inventory id
 	def parse_log ( self ):
                 try:
-                        with open('ivn.log','r') as f_obj:
+                        with open('cmm.log','r') as f_obj:
                                 log = f_obj.read().strip('\n')
                                 f_obj.close()
                                 log = log.split('\n')
@@ -54,7 +54,7 @@ class imm ( object ):
         def relog ( self ):
                 print("Re Logging")
                 try:
-		        with open('ivn.log','w') as f_obj:
+		        with open('cmm.log','w') as f_obj:
                                 for i in self.data:
                                         line = str('%sep'.join(i)+'\n')
                                         f_obj.write(line)
@@ -64,7 +64,25 @@ class imm ( object ):
                 except Excecption as err:
                         print("File Error, Bad file.! : %s"%err)
                         exit()
-                
+        def append ( self , c_name , due ,unit , t_trans ,desc , new=0 ):
+                #Checks and adds Content to the inventory
+                try:
+                        z,k=float(due),float(t_trans)
+                        del z
+                        del k
+                except:
+                        print("Wrong entry, Use numbers for amount and rate")
+                        return(-2)
+                #Parse them nicely
+                try:
+                        with open('cmm.log','w' if new else 'a') as f_obj:
+                                line = str('%sep'.join([c_name,due,unit,t_trans,desc])+'\n')
+                                f_obj.write(line)
+                                f_obj.flush()
+                                f_obj.close()
+                                if debug and verbose:print("Added new items to inventory.")
+                except:
+                        print("No log to append")
 	def search ( self , key):
 		# Returns a subsetset of self.data contaning the keywords
                 # Return a list of lists containing only names whic matcvh it
@@ -89,8 +107,7 @@ class imm ( object ):
 		# Modify data as per future leads
 		return
 
-some  = imm ( 112 )
+some  = cmm( 112 )
 some.parse_log()
 some.test_print()
 d  =['BLUE_NORMAL', '50', 'Kg', '15', 'Just a blue color']
-some.update("BLUE_NORMAL" , d)

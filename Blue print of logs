@@ -1,8 +1,14 @@
+# EMS Utils
+# Contains:
+# IMM ( Inventory Management Module)
+# LMM ( Log / Hisotry Management Module)
+# CMM ( Client Management Module)
+
 ____________________________________________________________
 lmm log file blue print
 ____________________________________________________________
-Time			|| C_ID || Net Amount || products 
-Fri Feb  8 13:27:39 2019||1     || 110132     || a,b,c,d,e,f
+Transaction id || Time                     || C_ID/Name || Net Amount || products 
+101            || Fri Feb  8 13:27:39 2019 ||1          || 110132     || a,b,c,d,e,f
 -------------------------------------------------------------
 
 ____________________________________________________________
@@ -10,3 +16,12 @@ ivn log file
 _____________________________________________________________
 Product_id    || Amount || Unit || Mrp Rate/Unit||Description
 RED_NORMAL    || 100    || Kg   || 20           || Just a normal red color
+--------------------------------------------------------------
+
+______________________________________________________________
+cmm log file
+______________________________________________________________
+Client name || Due || Unit  || Total Transactions || Description
+Soman       || 50  || Rupee || 10000             || Soman the woman who is roman
+Makshuf     || 0   || Rupee || 2000               || Makshuf broooooooooooooooooo
+---------------------------------------------------------------

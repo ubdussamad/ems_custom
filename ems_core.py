@@ -1,9 +1,9 @@
 # Bismillah-he ar-Rehman ar-Rahim
 # EMS - Custom
 # Ref: 6Feb2018
-# Version: 0
+# Version: 0.1
 # Author: Mohammesd S. Haque <ubdussamad@gmail.com>
-# Contract For: Nouman
+# Contract For: Mr Nouman
 # Copyright 2019 EMD Systems.
 
 import maths

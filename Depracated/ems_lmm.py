@@ -1,8 +1,4 @@
-import math
-# Log Management module
 
-debug = 0
-verbose = 0
 
 
 

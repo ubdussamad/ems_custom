@@ -14,8 +14,8 @@ Transaction id || Time                     || C_ID/Name || Net Amount || product
 ____________________________________________________________
 ivn log file
 _____________________________________________________________
-Product_id    || Amount || Unit || Mrp Rate/Unit||Description
-RED_NORMAL    || 100    || Kg   || 20           || Just a normal red color
+Product_id    || Qty || Unit || Mrp Rate/Unit||Description
+RED_NORMAL    || 100 || Kg   || 20           || Just a normal red color
 --------------------------------------------------------------
 
 ______________________________________________________________
@@ -25,3 +25,5 @@ Client name || Due || Unit  || Total Transactions || Description
 Soman       || 50  || Rupee || 10000             || Soman the woman who is roman
 Makshuf     || 0   || Rupee || 2000               || Makshuf broooooooooooooooooo
 ---------------------------------------------------------------
+
++971525285590

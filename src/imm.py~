@@ -48,7 +48,7 @@ class imm ( object ):
         self.server.commit()
     def search ( self , product= ''):
         # Returns a subsetset of self.data contaning the keywords
-        # Return a list of lists containing only names whic matcvh it
+        # Returns a list of lists containing only names whic matcvh it
         if not product:self.cursor.execute('SELECT * FROM ivn')
         else:self.cursor.execute('SELECT * FROM ivn WHERE P_id LIKE (?)',
                                     (product+"%",))

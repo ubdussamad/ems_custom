@@ -28,18 +28,20 @@ class ems_core ( object):
         self.imm.create_db()
 
         # List of all the items for the session
-        self.cart = [] # [[p_id , qty]]
+        self.cart = [] # [[p_id , qty , unit,rate]]
         self.c_id = 0
         self.recipt = {}
     def display_cart(self):
         return(self.cart)
-    def add_to_cart(self, p_id, qty, rate ):
-        self.cart.append( [p_id , qty , rate] )
+    def add_to_cart(self, p_id, qty, unit, rate ):
+        self.cart.append( [p_id , qty  , unit, rate] )
     def change_cid ( self, client ):
         self.c_id = self.cmm.client_to_id( client )
     def clear_session(self):
         self.cart = []
         self.c_id = 0
+    def display_all_customers(self):
+        return self.cmm.list_c_names()
     def check_out ( self , payment_type):
         # Deduct the inventory *
         # --> Process Amount *
@@ -47,7 +49,7 @@ class ems_core ( object):
         # Log the transaction (Once per order)*
         # Genrate the Recipt *
         if self.cart == []:
-            print("Empty Cart")
+            print("Empty Cart") #Could go in status label
             return(-1)
         self.total_amount = 0
         for i in self.cart:
@@ -74,6 +76,8 @@ class ems_core ( object):
                    "data":data , "Billed by": self.agent,
                    "Payment Type": p_type , "Total Amount":total_amount , "Client": self.c_id}
         return(recipt)
+    def display_ivn(self, p_id = ''):
+        return self.imm.search(p_id)
 if __name__ == "__main__":
     some = ems_core('ems','kallu')
     some.add_to_cart('RED_NORMAL',20,12)

@@ -53,9 +53,10 @@ class cmm ( object ):
                 self.cursor.execute("INSERT INTO cmm(C_id,Client,Due,Unit,Net_Transactions,Description) VALUES (?,?,?,?,?,?)",
                                     ( c_id, *data ))
                 self.server.commit()
+        def client_details(self,client):
+                return(self.search(client)[0])
         def client_to_id ( self , client ):
                 data = self.search(client)
-                print(data)
                 return ( data[0][0] )
         def list_c_names( self ):
                 self.cursor.execute('SELECT (Client) FROM cmm',)

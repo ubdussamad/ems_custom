@@ -53,7 +53,7 @@ class ems_core ( object):
             return(-1)
         self.total_amount = 0
         for i in self.cart:
-            self.total_amount += float(i[1])*float(i[2]) #Custom Rate
+            self.total_amount += float(i[1])*float(i[3]) #Custom Rate
             self.imm.update( i[0] , 'chk_out' , [i[1]])
         
 
@@ -71,7 +71,7 @@ class ems_core ( object):
 
                             
     def genrate_recipt(self,t_id,date, p_type,total_amount):
-        data = [ i+[i[1]*i[2]] for i in self.cart]
+        data = [ i+[float(i[1])*float(i[3])] for i in self.cart]
         recipt = { "Transaction Id":t_id , "Date":date ,
                    "data":data , "Billed by": self.agent,
                    "Payment Type": p_type , "Total Amount":total_amount , "Client": self.c_id}

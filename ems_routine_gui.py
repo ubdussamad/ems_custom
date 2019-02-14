@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'routine_window.ui'
@@ -9,6 +10,8 @@
 from PyQt4 import QtCore, QtGui
 from ems_core import *
 some = ems_core('ems','kallu')
+GRAND_TOTAL_AMOUNT_FOR_SESSION = 0
+LAST_SALE_AMOUNT = 0
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -27,10 +30,22 @@ class Ui_EMS(object):
     def dummy(self):
         print("Iam a dummy!")
     def normal_checkout(self):
+        global GRAND_TOTAL_AMOUNT_FOR_SESSION
+        global LAST_SALE_AMOUNT
+        LAST_SALE_AMOUNT = float(self.total_amt.text())
+        GRAND_TOTAL_AMOUNT_FOR_SESSION += float(self.total_amt.text())
+        self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
         some.check_out("current")
+        self.clear_cart_routine()
     def borrow_checkout(self):
+        global GRAND_TOTAL_AMOUNT_FOR_SESSION
+        global LAST_SALE_AMOUNT
+        LAST_SALE_AMOUNT = float(self.total_amt.text())
+        GRAND_TOTAL_AMOUNT_FOR_SESSION += float(self.total_amt.text())
+        self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
         some.check_out("borrow")
-    def print_recipt(self):
+        self.clear_cart_routine()
+    def print_recipt_routine(self):
         print(some.recipt)
     def customer_change(self):
         # change self.c_name
@@ -244,6 +259,10 @@ class Ui_EMS(object):
         #Customer Name Label
         self.c_name = QtGui.QLabel(self.centralwidget)
         self.c_name.setObjectName(_fromUtf8("c_name"))
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.c_name.setFont(font)
         
         self.gridLayout.addWidget(self.c_name, 1, 1, 1, 1)
         self.label_5 = QtGui.QLabel(self.centralwidget)
@@ -323,20 +342,33 @@ class Ui_EMS(object):
         self.gridLayout_3.addLayout(self.gridLayout_2, 0, 0, 1, 1)
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        #Checkout button current
         self.chk_out = QtGui.QPushButton(self.centralwidget)
         self.chk_out.setObjectName(_fromUtf8("chk_out"))
+        self.chk_out.clicked.connect(self.normal_checkout)
+        
         self.verticalLayout_2.addWidget(self.chk_out)
+        
+        #Checkout DUE
         self.due_self = QtGui.QPushButton(self.centralwidget)
         self.due_self.setObjectName(_fromUtf8("due_self"))
+        self.due_self.clicked.connect(self.borrow_checkout)
+        
         self.verticalLayout_2.addWidget(self.due_self)
         self.print_recipt = QtGui.QPushButton(self.centralwidget)
+        #Print Recipt Button
         self.print_recipt.setObjectName(_fromUtf8("print_recipt"))
         self.verticalLayout_2.addWidget(self.print_recipt)
+        self.print_recipt.clicked.connect(self.print_recipt_routine)
+        
         self.clr = QtGui.QPushButton(self.centralwidget)
         self.clr.setObjectName(_fromUtf8("clr"))
+        self.clr.clicked.connect(self.clear_cart_routine)
+        #########################################
         self.verticalLayout_2.addWidget(self.clr)
         self.exit = QtGui.QPushButton(self.centralwidget)
         self.exit.setObjectName(_fromUtf8("exit"))
+        self.exit.clicked.connect(lambda x:exit(0))
         self.verticalLayout_2.addWidget(self.exit)
         self.gridLayout_3.addLayout(self.verticalLayout_2, 1, 0, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_3, 0, 2, 1, 1)
@@ -356,12 +388,12 @@ class Ui_EMS(object):
         EMS.setWindowTitle(_translate("EMS", "EMS Custom | Routine Operations ", None))
         self.label.setText(_translate("EMS", "Search the Inventory", None))
         self.ivn_sb.setPlaceholderText(_translate("EMS", "Try Red...", None))
-        self.label_7.setText(_translate("EMS", "Time:", None))
-        self.time_label.setText(_translate("EMS", "Monday", None))
+        self.label_7.setText(_translate("EMS", "Date:", None))
+        self.time_label.setText(_translate("EMS",time.ctime(), None))
         self.label_8.setText(_translate("EMS", "User:", None))
         self.user_label.setText(_translate("EMS", "Kallu", None))
-        self.label_9.setText(_translate("EMS", "Total:", None))
-        self.garbage.setText(_translate("EMS", "50", None))
+        self.label_9.setText(_translate("EMS", "Total / Last Sale (Rupees):", None))
+        self.garbage.setText(_translate("EMS", "0.0 / 0.0", None))
         self.label_2.setText(_translate("EMS", "Select Customer", None))
         self.label_3.setText(_translate("EMS", "Current Customer:", None))
         self.c_name.setText(_translate("EMS","Random", None))

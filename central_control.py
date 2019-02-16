@@ -7,7 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-
+import time
+USER = ''
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:

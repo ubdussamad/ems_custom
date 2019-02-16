@@ -84,7 +84,7 @@ class Ui_MainWindow(object):
         self.mbs = QtGui.QTableWidget(self.centralwidget)
         self.mbs.setObjectName(_fromUtf8("mbs"))
         self.gridLayout.addWidget(self.mbs, 1, 1, 1, 1)
-        self.update_tables( self.mbs , some.lmm.most_bought() , ['Product','Qty Sold'])
+        self.update_tables( self.mbs , some.lmm.most_bought() , ['Product','Times Sold'])
         #Scarce Inventory list
         self.sivn = QtGui.QTableWidget(self.centralwidget)
         self.sivn.setObjectName(_fromUtf8("sivn"))

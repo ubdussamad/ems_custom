@@ -19,15 +19,23 @@ class cmm ( object ):
         def create_db (self):
                 self.cursor.execute("CREATE TABLE IF NOT EXISTS cmm(C_id REAL,Client TEXT,Due REAL,Unit TEXT,Net_Transactions REAL ,Description TEXT)")
 
+        def delete(self, c_id):
+                self.cursor.execute('DELETE FROM cmm WHERE C_id = (?)',(c_id,))
+                self.server.commit()
+        def is_user( self , c_id ):
+                self.cursor.execute('SELECT * FROM cmm where C_id = (?)',(c_id,))
+                l = self.cursor.fetchone()
+                return( bool(l) )
+        
         def update (self , c_id , action=False , amount=0 , data = [] ):
                 # Clear dues , Change names et-cetra.
                 # NOte: Once Registered, You can't change the client id.
                 self.create_db()
                 if DEBUG:print("C_id:",c_id)
                 self.cursor.execute('SELECT * FROM cmm where C_id = (?)',(c_id,))
-                data = self.cursor.fetchone()
+                l = self.cursor.fetchone()
 
-                if not data:
+                if not l:
                         print("Invaild Client Key!")
                         return(-1)
 
@@ -37,14 +45,17 @@ class cmm ( object ):
                         elif action=='d_add':
                                 self.cursor.execute('UPDATE cmm SET Due = Due + (?), Net_Transactions = Net_Transactions + (?)  WHERE C_id = (?)', (amount, amount ,c_id))
                         elif action == 'u_acc':
-                                self.cursor.execute('UPDATE cmm SET Net_Transactions = Net_Transactions + (?) WHERE C_id = (?)', (amount ,c_id))
+                                self.cursor.execute('UPDATE cmm SET Net_Transactions = Net_Transactions + (?) WHERE C_id = (?)',
+                                                    (amount ,c_id))
                         else:
                                 print("Bad Checkout!")
                                 return(-1)
                         self.server.commit()
-                else:
-                        self.cursor.execute('UPDATE cmm SET(Client,Due,Unit,Net_Transactions,Description) = (?,?,?,?,?) WHERE C_id = (?)',
-                                            (*data,c_id))
+                else:   #Client TEXT,Due REAL,Unit TEXT,Net_Transactions REAL ,Description TEXT)
+                        data = ( *list(map(str,data)), str(c_id))
+                        #print(data)
+                        query = "UPDATE cmm SET Client = \'%s\',Due = %s,Unit = \'%s\',Net_Transactions = %s ,Description = \'%s\' WHERE C_id = %s;"%data
+                        self.cursor.execute(query)
                         self.server.commit()
                 
         def append ( self , data ):
@@ -59,13 +70,17 @@ class cmm ( object ):
                 data = self.search(client)
                 return ( data[0][0] )
         def list_c_names( self ):
-                self.cursor.execute('SELECT (Client) FROM cmm',)
+                self.cursor.execute('SELECT (Client) FROM cmm')
+                data = self.cursor.fetchall()
+                return(data)
+        def dues( self ):
+                self.cursor.execute('SELECT Client, Due, Unit FROM cmm ORDER BY Due DESC')
                 data = self.cursor.fetchall()
                 return(data)
 
         def search ( self, client =''):
-                if not client:self.cursor.execute('SELECT * FROM cmm')
-                else:self.cursor.execute('SELECT * FROM cmm WHERE Client LIKE (?)',
+                if not client:self.cursor.execute('SELECT * FROM cmm ORDER BY Due DESC')
+                else:self.cursor.execute('SELECT * FROM cmm WHERE Client LIKE (?) ORDER BY Due DESC',
                                     (client+"%",))
                 data = self.cursor.fetchall()
                 return(data)

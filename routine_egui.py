@@ -72,7 +72,7 @@ class Ui_EMS(object):
         self.cart.setRowCount(self.cart_length)
         self.cart.setColumnCount(5)
         self.cart_table_headers = ['Product_id','Qty','Unit','Rate/Unit','Amount']# Ulta crude scaling technique
-        self.cart.setHorizontalHeaderLabels(self.cart_table_headers)
+        self.ivn.setHorizontalHeaderLabels(self.cart_table_headers)
         for i in range(0,self.cart_length):
             p_id = QtGui.QTableWidgetItem(str(self.cart_tuple[i][0]))
             qty = QtGui.QTableWidgetItem(str(self.cart_tuple[i][1]))

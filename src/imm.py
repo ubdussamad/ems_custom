@@ -35,7 +35,9 @@ class imm ( object ):
             
         elif u_type == 'total_update':
             # Updating Data of an Specific Product
-            self.cursor.execute("UPDATE ivn SET(Quantity,Unit,Unit_Rate,Description) = (?,?,?,?) WHERE P_id = (?)",(*data,p_id))
+            data = (*data,p_id)
+            query = "UPDATE ivn SET Quantity = \'%s\',Unit = \'%s\',Unit_Rate = \'%s\',Description = \'%s\' WHERE P_id = \'%s\';"%(data)
+            self.cursor.execute(query)
             self.server.commit()
         else:
             print("Bad Update Type!")
@@ -46,6 +48,22 @@ class imm ( object ):
         self.cursor.execute("INSERT INTO ivn ( P_id, Quantity, Unit, Unit_Rate, Description ) VALUES (?,?,?,?,?)",
                             (*data,))
         self.server.commit()
+    def return_item_names(self):
+        self.cursor.execute('SELECT P_id FROM ivn')
+        data = self.cursor.fetchall()
+        return(data)
+
+    def scarce( self ):
+        self.cursor.execute('SELECT P_id, Quantity , Unit FROM ivn ORDER BY Quantity ASC')
+        data = self.cursor.fetchall()
+        return(data)
+
+
+    
+    def delete(self, p_id):
+        self.cursor.execute('DELETE FROM ivn WHERE P_id = (?)',(p_id,))
+        self.server.commit()
+        
     def search ( self , product= ''):
         # Returns a subsetset of self.data contaning the keywords
         # Returns a list of lists containing only names whic matcvh it

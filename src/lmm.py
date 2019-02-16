@@ -27,6 +27,25 @@ class lmm ( object ):
         def append_log ( self, data ):
                 self.cursor.execute("INSERT INTO hmm (T_id, Time, C_id, Net_Amt, Products) VALUES (?,?,?,?,?)",(*data,))
                 self.server.commit()
+
+        def most_bought(self):
+                self.cursor.execute('SELECT Products FROM hmm') 
+                data = self.cursor.fetchall()
+                products = []
+                for i in data:
+                        l = i[0].split(',')
+                        for j in l:
+                                products.append(j)
+                s = set(products)
+                dic = {}
+                for i in s:
+                        k = len([ j for j in products if j == i])
+                        dic[i] = k
+                data = []
+                for i in dic:
+                        data.append([i,dic[i]])
+                data = sorted(data,key=lambda x: (x[1],x[0]))[::-1]
+                return(data)
                 
         def search ( self , key = '' ,  key_type = 0):
                 # Returns a subsetset of self.data contaning the keywords

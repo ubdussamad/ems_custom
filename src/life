@@ -1,1 +1,0 @@
-some.imm.cursor.execute('DELETE FROM ivn WHERE rowid NOT IN (SELECT MIN(rowid) FROM ivn GROUP BY P_id)')

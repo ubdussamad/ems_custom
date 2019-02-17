@@ -8,7 +8,7 @@
 
 from PyQt4 import QtCore, QtGui
 from ems_core import *
-some = ems_core('ems','kallu')
+some = ems_core('ems','admin')
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -201,6 +201,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.update_ivn, 1, 0, 1, 1)
         self.pushButton = QtGui.QPushButton(self.centralwidget)
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.pushButton.clicked.connect(self.ret_login)
         self.gridLayout.addWidget(self.pushButton, 3, 0, 1, 1)
         self.formLayout.setLayout(1, QtGui.QFormLayout.LabelRole, self.gridLayout)
 
@@ -239,10 +240,23 @@ class Ui_MainWindow(object):
         self.del_item.setText(_translate("MainWindow", "Delete Item", None))
         self.add_ivn.setText(_translate("MainWindow", "Add New Item", None))
         self.update_ivn.setText(_translate("MainWindow", "Update Inventory", None))
-        self.pushButton.setText(_translate("MainWindow", "Exit", None))
+        self.pushButton.setText(_translate("MainWindow", "Back", None))
         self.del_ivn.setText(_translate("MainWindow", "Delete all Inventory", None))
         self.label_2.setText(_translate("MainWindow", "Caution", None))
 
+class inventory_management_window(QtGui.QMainWindow, Ui_MainWindow):
+    ret = QtCore.pyqtSignal()
+    def ret_login(self):
+        self.ret.emit()
+        self.close()
+    def __init__(self, parent=None , user = ''):
+        super(inventory_management_window, self).__init__(parent)
+        USER = user
+        self.setupUi(self)
+    def show_decorator(self,user):
+        global some
+        some = ems_core('ems',user)
+        self.show()
 
 if __name__ == "__main__":
     import sys

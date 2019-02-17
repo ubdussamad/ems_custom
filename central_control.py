@@ -35,21 +35,26 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.rw = QtGui.QPushButton(self.centralwidget)
         self.rw.setObjectName(_fromUtf8("rw"))
+        self.rw.clicked.connect(self.routine_wcall)
         self.gridLayout.addWidget(self.rw, 0, 0, 1, 1)
         self.sw = QtGui.QPushButton(self.centralwidget)
         self.sw.setObjectName(_fromUtf8("sw"))
+        self.sw.clicked.connect(self.status_wcall)
         self.gridLayout.addWidget(self.sw, 0, 1, 1, 1)
         self.cm = QtGui.QPushButton(self.centralwidget)
         self.cm.setObjectName(_fromUtf8("cm"))
+        self.cm.clicked.connect(self.customer_wcall)
         self.gridLayout.addWidget(self.cm, 0, 2, 1, 1)
         self.im = QtGui.QPushButton(self.centralwidget)
         self.im.setObjectName(_fromUtf8("im"))
+        self.im.clicked.connect(self.inventory_wcall)
         self.gridLayout.addWidget(self.im, 1, 0, 1, 1)
         self.st = QtGui.QPushButton(self.centralwidget)
         self.st.setObjectName(_fromUtf8("st"))
         self.gridLayout.addWidget(self.st, 1, 1, 1, 1)
         self.exit = QtGui.QPushButton(self.centralwidget)
         self.exit.setObjectName(_fromUtf8("exit"))
+        self.exit.clicked.connect(self.ret_login)
         self.gridLayout.addWidget(self.exit, 1, 2, 1, 1)
         self.gridLayout_2.addLayout(self.gridLayout, 3, 0, 1, 1)
         self.label = QtGui.QLabel(self.centralwidget)
@@ -90,20 +95,43 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "EMS | Central Control", None))
         self.rw.setText(_translate("MainWindow", "Routine Window", None))
         self.sw.setText(_translate("MainWindow", "Status Window", None))
         self.cm.setText(_translate("MainWindow", "Customer Managment Window", None))
         self.im.setText(_translate("MainWindow", "Inventory Management Window", None))
         self.st.setText(_translate("MainWindow", "Settings", None))
-        self.exit.setText(_translate("MainWindow", "Exit", None))
+        self.exit.setText(_translate("MainWindow", "Back", None))
         self.label.setText(_translate("MainWindow", "Please select the utility you wish to use", None))
         self.data.setText(_translate("MainWindow",  "%s | %s"%(time.ctime(),USER), None))
         self.label_2.setText(_translate("MainWindow", "EMS | Central Control", None))
 
-
-class YMainWindow(QtGui.QMainWindow, Ui_MainWindow):
+class central_control_window(QtGui.QMainWindow, Ui_MainWindow):
+    routine = QtCore.pyqtSignal()
+    status = QtCore.pyqtSignal()
+    customer = QtCore.pyqtSignal()
+    inventory = QtCore.pyqtSignal()
+    ret = QtCore.pyqtSignal()
     def __init__(self, parent=None , user = ''):
-        super(YMainWindow, self).__init__(parent)
-        USER = user
+        super(central_control_window, self).__init__(parent)
         self.setupUi(self)
+    ret = QtCore.pyqtSignal()
+    def ret_login(self):
+        self.ret.emit()
+        self.close()
+    def show_decorator(self,user):
+        #print("Username is: %s"%user)
+        USER = user
+        self.retranslateUi(self)
+        self.show()
+        
+    @QtCore.pyqtSlot()
+    def routine_wcall(self):self.routine.emit();self.close()
+    @QtCore.pyqtSlot()
+    def status_wcall(self):self.status.emit();self.close()
+    @QtCore.pyqtSlot()
+    def customer_wcall(self):self.customer.emit();self.close()
+    @QtCore.pyqtSlot()
+    def inventory_wcall(self):self.inventory.emit();self.close()
+    
+

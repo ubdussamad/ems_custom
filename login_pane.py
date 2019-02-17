@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'login.ui'
@@ -8,7 +9,13 @@
 USER = ''
 from PyQt4 import QtCore, QtGui
 import sqlite3,hashlib,time
-from central_control import YMainWindow
+from central_control import central_control_window
+from client_control import client_control_window
+from inventory_management import inventory_management_window
+from routine_egui import routine_window
+from status import status_window
+
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -24,13 +31,11 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_MainWindow(object):
-    def __init__(self):
+   #def dummy(self,*args):
+    #    self.close()
+    def login(self):
         self.server = sqlite3.connect('ems.db')
         self.cursor = self.server.cursor()
-    def dummy(self,*args):
-        self.close()
-        #close("Kallu")
-    def login(self):
         user = self.lineEdit.text()
         self.cursor.execute('SELECT (password) FROM credentials WHERE user = (?)',
                                     (user,))
@@ -42,12 +47,13 @@ class Ui_MainWindow(object):
             print("Successful Login!")
             self.cursor.close() #Future Palns to close the connections
             self.server.close()
+            global USER
+            USER = user
             #Direct the pane to future
-            self.hide()
+            self.dummy()
             #close(user)
         else:
-            print("Wrong_password")
-        print(data)
+            return(-1)
         
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
@@ -77,7 +83,7 @@ class Ui_MainWindow(object):
         self.label.setObjectName(_fromUtf8("label"))
         self.lineEdit = QtGui.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(290, 190, 241, 27))
-        self.lineEdit.setStyleSheet(_fromUtf8("color: rgb(50,50,50);\n"
+        self.lineEdit.setStyleSheet(_fromUtf8("color: rgb(200,200,200);\n"
 "background-color: rgba(255, 255, 255, 0);\n"
 "selection-background-color: rgba(255, 255, 255, 0);\n"
 "alternate-background-color: rgba(255, 255, 255, 0);\n"
@@ -88,7 +94,7 @@ class Ui_MainWindow(object):
         self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
         self.lineEdit_2 = QtGui.QLineEdit(self.centralwidget)
         self.lineEdit_2.setGeometry(QtCore.QRect(290, 240, 241, 27))
-        self.lineEdit_2.setStyleSheet(_fromUtf8("color: rgb(50,50,50);\n"
+        self.lineEdit_2.setStyleSheet(_fromUtf8("color: rgb(200,200,200);\n"
 "background-color: rgba(255, 255, 255, 0);\n"
 "selection-background-color: rgba(255, 255, 255, 0);\n"
 "alternate-background-color: rgba(255, 255, 255, 0);\n"
@@ -97,6 +103,7 @@ class Ui_MainWindow(object):
 "border-bottom-color: rgba(255, 255, 255, 0);\n"
 "border-left-color: rgba(255, 255, 255, 0);"))
         self.lineEdit_2.setObjectName(_fromUtf8("lineEdit_2"))
+        self.lineEdit_2.textChanged.connect(self.login)
         self.pushButton = QtGui.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(350, 290, 111, 31))
         self.pushButton.setStyleSheet(_fromUtf8("color: rgb(255, 255, 255);\n"
@@ -108,7 +115,7 @@ class Ui_MainWindow(object):
 "border-bottom-color: rgba(255, 255, 255, 0);\n"
 "border-left-color: rgba(255, 255, 255, 0);"))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        self.pushButton.clicked.connect(self.dummy)
+        self.pushButton.clicked.connect(self.login)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 25))
@@ -146,10 +153,24 @@ def main():
     app = QtGui.QApplication.instance()
     if app is None:
         app = QtGui.QApplication(sys.argv)
-    wx = XMainWindow()
-    wy = YMainWindow(user=USER)
-    wx.closed.connect(wy.show)
-    wx.show()
+        
+    wa = XMainWindow()
+    wb = central_control_window(user=USER)
+    wb.ret.connect(wa.show)
+    wc = client_control_window()
+    wd = inventory_management_window()
+    we = routine_window()
+    wf = status_window()
+    wc.ret.connect(wb.show)
+    wd.ret.connect(wb.show)
+    we.ret.connect(wb.show)
+    wf.ret.connect(wb.show)
+    wa.closed.connect(lambda: wb.show_decorator(USER))
+    wb.routine.connect(lambda :we.show_decorator(USER))
+    wb.status.connect(lambda :wf.show_decorator(USER))
+    wb.customer.connect(lambda :wc.show_decorator(USER))
+    wb.inventory.connect(lambda :wd.show_decorator(USER))
+    wa.show()
     return app.exec_()
 
 if __name__ == "__main__":

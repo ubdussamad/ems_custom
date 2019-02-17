@@ -9,7 +9,8 @@
 
 from PyQt4 import QtCore, QtGui
 from ems_core import *
-some = ems_core('ems','kallu')
+from recipt_genrator import *
+some = ems_core('ems','admin')
 GRAND_TOTAL_AMOUNT_FOR_SESSION = 0
 LAST_SALE_AMOUNT = 0
 try:
@@ -46,7 +47,7 @@ class Ui_EMS(object):
         some.check_out("borrow")
         self.clear_cart_routine()
     def print_recipt_routine(self):
-        print(some.recipt)
+        genrate_recipt(some.recipt)
     def customer_change(self):
         # change self.c_name
         customer = str(self.comboBox.currentText())
@@ -368,7 +369,7 @@ class Ui_EMS(object):
         self.verticalLayout_2.addWidget(self.clr)
         self.exit = QtGui.QPushButton(self.centralwidget)
         self.exit.setObjectName(_fromUtf8("exit"))
-        self.exit.clicked.connect(lambda x:exit(0))
+        self.exit.clicked.connect(self.ret_login)
         self.verticalLayout_2.addWidget(self.exit)
         self.gridLayout_3.addLayout(self.verticalLayout_2, 1, 0, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_3, 0, 2, 1, 1)
@@ -411,9 +412,28 @@ class Ui_EMS(object):
         self.due_self.setText(_translate("EMS", "Due / Self", None))
         self.print_recipt.setText(_translate("EMS", "Print Recipt", None))
         self.clr.setText(_translate("EMS", "Clear", None))
-        self.exit.setText(_translate("EMS", "Exit", None))
+        self.exit.setText(_translate("EMS", "Back", None))
         self.total_amount = 0
 
+class routine_window(QtGui.QMainWindow, Ui_EMS):
+    closed = QtCore.pyqtSignal()
+    ret = QtCore.pyqtSignal()
+    def ret_login(self):
+        self.ret.emit()
+        self.close()
+    def __init__(self, parent=None , user = ''):
+        super(routine_window, self).__init__(parent)
+        USER = user
+        self.setupUi(self)
+        
+    @QtCore.pyqtSlot()
+    def dummy(self):
+        self.closed.emit()
+        self.close()
+    def show_decorator(self,user):
+        global some
+        some = ems_core('ems',user)
+        self.show()
 
 if __name__ == "__main__":
     import sys

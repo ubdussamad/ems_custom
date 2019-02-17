@@ -8,7 +8,7 @@
 
 from PyQt4 import QtCore, QtGui
 from ems_core import *
-some = ems_core('ems','kallu')
+some = ems_core('ems','admin')
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -99,6 +99,12 @@ class Ui_MainWindow(object):
         self.label_4.setFont(font)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.gridLayout_2.addWidget(self.label_4, 1, 0, 1, 1)
+
+        self.back = QtGui.QPushButton(self.centralwidget)
+        self.back.setObjectName(_fromUtf8("back"))
+        self.back.clicked.connect(self.ret_login)
+
+        self.gridLayout.addWidget(self.back, 2, 0, 1, 1)
         self.guidance = QtGui.QLabel(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -118,7 +124,7 @@ class Ui_MainWindow(object):
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
-
+        
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -127,8 +133,22 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Customers with most Due", None))
         self.label_2.setText(_translate("MainWindow", "Most bought Stock", None))
         self.label_3.setText(_translate("MainWindow", "Scarce Stock items", None))
+        self.back.setText(_translate("MainWindow", "Back", None))
         #self.label_4.setText(_translate("MainWindow", "Sales timing trend", None))
 
+class status_window(QtGui.QMainWindow, Ui_MainWindow):
+    def __init__(self, parent=None , user = ''):
+        super(status_window, self).__init__(parent)
+        USER = user
+        self.setupUi(self)
+    ret = QtCore.pyqtSignal()
+    def ret_login(self):
+        self.ret.emit()
+        self.close()
+    def show_decorator(self,user):
+        global some
+        some = ems_core('ems',user)
+        self.show()
 
 if __name__ == "__main__":
     import sys

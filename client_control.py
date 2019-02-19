@@ -40,6 +40,7 @@ class Ui_MainWindow(object):
             delta = float(table_amount) - float(amount)
             delta = QtGui.QTableWidgetItem(str(delta))
             self.ivn.setItem(index,2,delta)
+            self.update_details()
             
         else:
             print(False)

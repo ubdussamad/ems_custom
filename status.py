@@ -41,6 +41,11 @@ class Ui_MainWindow(object):
             db_data = [ QtGui.QTableWidgetItem(str(j)) for j in data[i] ]
             for j in range(len(db_data)):
                 table.setItem(i,j,db_data[j])
+    def total_update(self):
+        self.update_tables( self.cl_due , some.cmm.dues() , ['Customer','Due','Unit'])
+        self.update_tables( self.mbs , some.lmm.most_bought() , ['Product','Times Sold'])
+        self.update_tables( self.sivn , some.imm.scarce() , ['Product','Qty Left','Unit'])
+        
                 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
@@ -105,6 +110,11 @@ class Ui_MainWindow(object):
         self.back.clicked.connect(self.ret_login)
 
         self.gridLayout.addWidget(self.back, 2, 0, 1, 1)
+        self.update = QtGui.QPushButton(self.centralwidget)
+        self.update.setObjectName(_fromUtf8("update"))
+        self.update.clicked.connect(self.total_update)
+        self.gridLayout.addWidget(self.update, 5, 0, 1, 1)
+        
         self.guidance = QtGui.QLabel(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -134,6 +144,7 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "Most bought Stock", None))
         self.label_3.setText(_translate("MainWindow", "Scarce Stock items", None))
         self.back.setText(_translate("MainWindow", "Back", None))
+        self.update.setText(_translate("MainWindow", "Update", None))
         #self.label_4.setText(_translate("MainWindow", "Sales timing trend", None))
 
 class status_window(QtGui.QMainWindow, Ui_MainWindow):

@@ -12,7 +12,6 @@ from ems_core import *
 from recipt_genrator import *
 some = ems_core('ems','admin')
 from sys import platform
-import os
 
 
 GRAND_TOTAL_AMOUNT_FOR_SESSION = 0
@@ -44,10 +43,8 @@ class Ui_EMS(object):
         LAST_SALE_AMOUNT = float(self.total_amt.text())
         GRAND_TOTAL_AMOUNT_FOR_SESSION += float(self.total_amt.text())
         self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
-        ret = some.check_out("current")
+        some.check_out("current")
         self.clear_cart_routine()
-        if ret != -1:
-            self.print_recipt.setEnabled(True)
     def borrow_checkout(self):
         global GRAND_TOTAL_AMOUNT_FOR_SESSION
         global LAST_SALE_AMOUNT
@@ -56,17 +53,8 @@ class Ui_EMS(object):
         self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
         some.check_out("borrow")
         self.clear_cart_routine()
-        if ret != -1:
-            self.print_recipt.setEnabled(True)
-            
     def print_recipt_routine(self):
-        recipt = genrate_recipt(some.recipt)
-        if LINUX:
-            os.system('lpr \'%s\''%recipt)
-        else:
-            print("Currently Working on Windows")
-            os.system('print \'%s\''%recipt)
-        
+        genrate_recipt(some.recipt)
     def customer_change(self):
         # change self.c_name
         customer = str(self.comboBox.currentText())
@@ -77,10 +65,8 @@ class Ui_EMS(object):
         self.due_label.setText(str(due))
         self.total_amount = 0
         self.total_amt.setText('0.0')
-        self.print_recipt.setEnabled(False)
         return
     def update_cart_with_amount( self ):  #Triggered by update button 
-        self.print_recipt.setEnabled(False)
         rc,cc= self.cart.rowCount() , self.cart.columnCount()
         for i,j in zip(range(rc),range(cc)):
             some.cart = sorted(some.cart)
@@ -111,7 +97,6 @@ class Ui_EMS(object):
         self.total_amt.setText(str(self.total_amount))
         
     def clear_cart_routine(self):
-        self.print_recipt.setEnabled(False)
         self.cart.setRowCount(0);
         some.cart = []
     def delete_selected_cart_item(self):
@@ -139,7 +124,6 @@ class Ui_EMS(object):
             self.ivn.setItem(i,3,rate)
             self.ivn.setItem(i,4,desc)
     def append_to_cart ( self , event= '' , dec='' , action=0):
-        self.print_recipt.setEnabled(False)
         if action or event.key() == QtCore.Qt.Key_Return: #This updates the cart
             self.update_cart_with_amount()
             self.total_amount = 0
@@ -306,7 +290,7 @@ class Ui_EMS(object):
         self.cart.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.cart.setTextElideMode(QtCore.Qt.ElideRight)
         self.cart.setGridStyle(QtCore.Qt.NoPen)
-        self.cart.itemClicked.connect(self.update_cart_with_amount)
+        #self.cart.itemClicked.connect(self.current_selected_cart_item())
         self.cart.resizeColumnsToContents()
         #self.cart.keyPressEvent = self.append_to_cart
 
@@ -382,7 +366,19 @@ class Ui_EMS(object):
         self.print_recipt.setObjectName(_fromUtf8("print_recipt"))
         self.verticalLayout_2.addWidget(self.print_recipt)
         self.print_recipt.clicked.connect(self.print_recipt_routine)
-        self.print_recipt.setEnabled(False)
+        self.pushButton.setStyleSheet(_fromUtf8("color: rgb(255, 255, 255);\n"
+                                                     110 "background-color: rgba(255, 255, 255, 0);\n"
+                                                     111 "selection-background-color: rgba(255, 255, 255, 0);\n"
+                                                     112 "alternate-background-color: rgba(255, 255, 255, 0);\n"
+                                                     113 "border-color: rgba(255, 255, 255, 0);\n"
+                                                     114 "border-right-color: rgba(255, 255, 255, 0);\n"
+                                                     115 "border-bottom-color: rgba(255, 255, 255, 0);\n"
+                                                     116 "border-left-color: rgba(255, 255, 255, 0);"))self.pushButton.setStyleSheet(_fromUtf8("color: rgb(255, 255, 255);\n"
+                                                                                                                                                    110 "background-color: rgba(255, 255, 255, 0);\n"
+                                                                                                                                                    111 "selection-background-color: rgba(255, 255, 255, 0);\n"                       
+        
+        
+        
         self.clr = QtGui.QPushButton(self.centralwidget)
         self.clr.setObjectName(_fromUtf8("clr"))
         self.clr.clicked.connect(self.clear_cart_routine)

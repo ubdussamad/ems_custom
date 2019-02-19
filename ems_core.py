@@ -79,7 +79,7 @@ class ems_core ( object):
     def display_ivn(self, p_id = ''):
         return self.imm.search(p_id)
 if __name__ == "__main__":
-    some = ems_core('ems','kallu')
+    some = ems_core('ems','admin')
     some.add_to_cart('RED_NORMAL',20,12)
     some.display_cart()
     some.add_to_cart('BLUE_NORMAL',5,20)

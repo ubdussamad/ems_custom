@@ -62,10 +62,10 @@ class Ui_EMS(object):
     def print_recipt_routine(self):
         recipt = genrate_recipt(some.recipt)
         if LINUX:
-            os.system('lpr \'%s\''%recipt)
+            os.system('lpr \'%s.png\''%recipt)
         else:
             print("Currently Working on Windows")
-            os.system('print \'%s\''%recipt)
+            os.system('print \'%s.png\''%recipt)
         
     def customer_change(self):
         # change self.c_name

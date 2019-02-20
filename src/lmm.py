@@ -63,7 +63,10 @@ class lmm ( object ):
                         # Must write a routine to convert Customer name to C_id
                         self.cursor.execute('SELECT * FROM cmm WHERE Client LIKE (?)',
                                     (key+"%",))
-                        tmp = self.cursor.fetchall()[0][0]
+                        try:
+                                tmp = self.cursor.fetchall()[0][0]
+                        except:
+                                return []
                         self.cursor.execute('SELECT * FROM hmm WHERE C_id = (?)',
                                     (tmp,))
                 else:

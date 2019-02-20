@@ -13,6 +13,7 @@ from central_control import central_control_window
 from client_control import client_control_window
 from inventory_management import inventory_management_window
 from routine_egui import routine_window
+from history import history_window
 from status import status_window
 
 
@@ -161,15 +162,21 @@ def main():
     wd = inventory_management_window()
     we = routine_window()
     wf = status_window()
+    wg = history_window()
+    
     wc.ret.connect(wb.show)
     wd.ret.connect(wb.show)
     we.ret.connect(wb.show)
     wf.ret.connect(wb.show)
+    wg.ret.connect(wb.show)
+    
     wa.closed.connect(lambda: wb.show_decorator(USER))
     wb.routine.connect(lambda :we.show_decorator(USER))
     wb.status.connect(lambda :wf.show_decorator(USER))
     wb.customer.connect(lambda :wc.show_decorator(USER))
     wb.inventory.connect(lambda :wd.show_decorator(USER))
+    wb.history.connect(lambda :wg.show_decorator(USER))
+    
     wa.show()
     return app.exec_()
 

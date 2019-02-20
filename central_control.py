@@ -51,6 +51,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.im, 1, 0, 1, 1)
         self.st = QtGui.QPushButton(self.centralwidget)
         self.st.setObjectName(_fromUtf8("st"))
+        self.st.clicked.connect(self.history_wcall)
         self.gridLayout.addWidget(self.st, 1, 1, 1, 1)
         self.exit = QtGui.QPushButton(self.centralwidget)
         self.exit.setObjectName(_fromUtf8("exit"))
@@ -100,7 +101,7 @@ class Ui_MainWindow(object):
         self.sw.setText(_translate("MainWindow", "Status Window", None))
         self.cm.setText(_translate("MainWindow", "Customer Managment Window", None))
         self.im.setText(_translate("MainWindow", "Inventory Management Window", None))
-        self.st.setText(_translate("MainWindow", "Settings", None))
+        self.st.setText(_translate("MainWindow", "History", None))
         self.exit.setText(_translate("MainWindow", "Back", None))
         self.label.setText(_translate("MainWindow", "Please select the utility you wish to use", None))
         self.data.setText(_translate("MainWindow",  "%s | %s"%(time.ctime(),USER), None))
@@ -111,6 +112,7 @@ class central_control_window(QtGui.QMainWindow, Ui_MainWindow):
     status = QtCore.pyqtSignal()
     customer = QtCore.pyqtSignal()
     inventory = QtCore.pyqtSignal()
+    history = QtCore.pyqtSignal()
     ret = QtCore.pyqtSignal()
     def __init__(self, parent=None , user = ''):
         super(central_control_window, self).__init__(parent)
@@ -124,7 +126,8 @@ class central_control_window(QtGui.QMainWindow, Ui_MainWindow):
         USER = user
         self.retranslateUi(self)
         self.show()
-        
+    @QtCore.pyqtSlot()
+    def history_wcall(self):self.history.emit();self.close()
     @QtCore.pyqtSlot()
     def routine_wcall(self):self.routine.emit();self.close()
     @QtCore.pyqtSlot()

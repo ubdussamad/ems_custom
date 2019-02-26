@@ -12,21 +12,23 @@ from ems_core import *
 from recipt_genrator import *
 some = ems_core('ems','admin')
 from sys import platform
+USER = 'admin'
 import os
 
-
+with open('resources/recipt.config') as file:
+    recipt_data = file.read()
+    recipt_data = recipt_data.strip('\n').split('|')
+    
 GRAND_TOTAL_AMOUNT_FOR_SESSION = 0
 LAST_SALE_AMOUNT = 0
 LINUX = False
 if platform == 'linux':
     LINUX = True
-
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     def _fromUtf8(s):
         return s
-
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
@@ -36,37 +38,46 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_EMS(object):
+    def __get_ttype(self):
+        self.__higher_priority = USER.lower() in ['nouman','desk1','desk2','desk3'] #The user has auth
+        self.__internal_sale = self.radioButton.isChecked() # The user wishes to proceed to internal sale
+        return(self.__higher_priority and self.__internal_sale)
+
     def dummy(self):
         print("Iam a dummy!")
     def normal_checkout(self):
         global GRAND_TOTAL_AMOUNT_FOR_SESSION
         global LAST_SALE_AMOUNT
+        if self.__get_ttype():
+            print("Internal Sale")
         LAST_SALE_AMOUNT = float(self.total_amt.text())
         GRAND_TOTAL_AMOUNT_FOR_SESSION += float(self.total_amt.text())
         self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
-        ret = some.check_out("current")
+        ret = some.check_out("current" , self.__get_ttype())
         self.clear_cart_routine()
         if ret != -1:
             self.print_recipt.setEnabled(True)
     def borrow_checkout(self):
+        if self.__get_ttype():
+            return
         global GRAND_TOTAL_AMOUNT_FOR_SESSION
         global LAST_SALE_AMOUNT
         LAST_SALE_AMOUNT = float(self.total_amt.text())
         GRAND_TOTAL_AMOUNT_FOR_SESSION += float(self.total_amt.text())
         self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
-        some.check_out("borrow")
+        some.check_out("borrow", self.__get_ttype())
         self.clear_cart_routine()
         if ret != -1:
             self.print_recipt.setEnabled(True)
-            
+
     def print_recipt_routine(self):
         recipt = genrate_recipt(some.recipt)
         if LINUX:
-            os.system('lpr \'%s.png\''%recipt)
+            os.system(recipt_data[2]%recipt)
         else:
             print("Currently Working on Windows")
-            os.system('print \'%s.png\''%recipt)
-        
+            os.system(recipt_data[3]%recipt)
+
     def customer_change(self):
         # change self.c_name
         customer = str(self.comboBox.currentText())
@@ -79,37 +90,47 @@ class Ui_EMS(object):
         self.total_amt.setText('0.0')
         self.print_recipt.setEnabled(False)
         return
-    def update_cart_with_amount( self ):  #Triggered by update button 
+    def update_cart_with_amount( self, ttype = 0):  #Triggered by update button
         self.print_recipt.setEnabled(False)
+        if self.__get_ttype():
+            self.due_self.setEnabled(False)
+        else:
+            self.due_self.setEnabled(True)
         rc,cc= self.cart.rowCount() , self.cart.columnCount()
         for i,j in zip(range(rc),range(cc)):
             some.cart = sorted(some.cart)
             amt = self.cart.item(i,1).text()
             rate = self.cart.item(i,3).text()
+            # Updating internal cart tuple with the modified data
             some.cart[i][1] = amt
             some.cart[i][3] = rate
+
         self.total_amount = 0
-        self.cart_tuple = sorted(some.display_cart()) ##Change                
+        self.cart_tuple = sorted(some.display_cart()) ##Change
         self.cart_length = len(self.cart_tuple)
         self.cart.setRowCount(self.cart_length)
-        self.cart.setColumnCount(5)
-        self.cart_table_headers = ['Product_id','Qty','Unit','Rate/Unit','Amount']# Ulta crude scaling technique
-        self.ivn.setHorizontalHeaderLabels(self.cart_table_headers)
+        self.cart.setColumnCount(6)
+        self.cart_table_headers = ['Product_id','Qty','Unit','Rate/Unit','Tax Amount','Total Amount']# Ulta crude scaling technique
+        self.cart.setHorizontalHeaderLabels(self.cart_table_headers)
         for i in range(0,self.cart_length):
             p_id = QtGui.QTableWidgetItem(str(self.cart_tuple[i][0]))
             qty = QtGui.QTableWidgetItem(str(self.cart_tuple[i][1]))
             unit = QtGui.QTableWidgetItem(str(self.cart_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.cart_tuple[i][3]))
             tmp = float(self.cart_tuple[i][1])*float(self.cart_tuple[i][3])
+            tax_percentage = float(self.cart_tuple[i][4])/100
+            tax_amount = tmp*tax_percentage if not ttype else 0
+            tmp += tax_amount
             self.total_amount += tmp
-            amount = QtGui.QTableWidgetItem(str(tmp))
+            amount = QtGui.QTableWidgetItem('%.2f'%tmp)
+            tax = QtGui.QTableWidgetItem('%.2f'%tax_amount)
             self.cart.setItem(i,0,p_id)
             self.cart.setItem(i,1,qty)
             self.cart.setItem(i,2,unit)
             self.cart.setItem(i,3,rate)
-            self.cart.setItem(i,4,amount)
-        self.total_amt.setText(str(self.total_amount))
-        
+            self.cart.setItem(i,4,tax)
+            self.cart.setItem(i,5,amount)
+        self.total_amt.setText('%.2f'%self.total_amount)
     def clear_cart_routine(self):
         self.print_recipt.setEnabled(False)
         self.cart.setRowCount(0);
@@ -120,8 +141,7 @@ class Ui_EMS(object):
         self.cart.removeRow(index)
         some.cart = sorted(some.cart)
         del some.cart[index]
-        self.update_cart_with_amount()
-            
+        self.update_cart_with_amount(self.__get_ttype())
     def query_ivn(self, query=''):
         self.ivn.setRowCount(0);
         self.ivn_tuple = sorted(some.display_ivn(query))
@@ -133,47 +153,66 @@ class Ui_EMS(object):
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
+            tax = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][5]))
+            hsc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][6]))
             self.ivn.setItem(i,0,p_id)
             self.ivn.setItem(i,1,qty)
             self.ivn.setItem(i,2,unit)
             self.ivn.setItem(i,3,rate)
             self.ivn.setItem(i,4,desc)
-    def append_to_cart ( self , event= '' , dec='' , action=0):
+            self.ivn.setItem(i,5,tax)
+            self.ivn.setItem(i,6,hsc)
+    def append_to_cart ( self , event= '' , dec='' , action=0 , ttype = 0):
+        #print("Current User is: %s"%USER)
+        # This function is called when something is to be added into the cart
         self.print_recipt.setEnabled(False)
         if action or event.key() == QtCore.Qt.Key_Return: #This updates the cart
-            self.update_cart_with_amount()
+            self.update_cart_with_amount(self.__get_ttype()) #Calling it for updating the cart everytime with amount
             self.total_amount = 0
+
             indexes = [i.row() for i in self.ivn.selectionModel().selectedRows()]
-            item = self.ivn_tuple[indexes[0]]
+            item = self.ivn_tuple[indexes[0]] #This is the datum from the iventory
+
+            #Protection from adding the same thing multiple times
             if item[0] in [self.cart.item(i,0).text() for i in range(self.cart.rowCount())]:
                 return
-            some.add_to_cart(item[0],'1',item[2],item[3])
-            self.cart_tuple = sorted(some.display_cart()) ##Change                
+
+            some.add_to_cart(item[0],'1',item[2],item[3],item[5]) #Adding the selected data to the main cart tuple
+
+            self.cart_tuple = sorted(some.display_cart()) ##Change
+
+
             self.cart_length = len(self.cart_tuple)
             self.cart.setRowCount(self.cart_length)
-            self.cart.setColumnCount(5)
-            self.cart_table_headers = ['Product_id','Qty','Unit','Rate/Unit','Amount']# Ulta crude scaling technique
+            self.cart.setColumnCount(6)
+            self.cart_table_headers = ['Product_id','Qty','Unit','Rate/Unit','Tax Amount','Amount']# Ulta crude scaling technique
             self.cart.setHorizontalHeaderLabels(self.cart_table_headers)
+
             for i in range(0,self.cart_length):
                 p_id = QtGui.QTableWidgetItem(str(self.cart_tuple[i][0]))
                 qty = QtGui.QTableWidgetItem(str(self.cart_tuple[i][1]))
                 unit = QtGui.QTableWidgetItem(str(self.cart_tuple[i][2]))
                 rate = QtGui.QTableWidgetItem(str(self.cart_tuple[i][3]))
                 tmp = float(self.cart_tuple[i][1])*float(self.cart_tuple[i][3])
-                self.total_amount += tmp
-                amount = QtGui.QTableWidgetItem(str(tmp))
+
+                tax_percentage = float(self.cart_tuple[i][4])/100
+                tax_amount = tmp * tax_percentage if not ttype else 0
+                self.total_amount += tmp + tax_amount if not ttype else 0 #Updated for kaccha
+                tmp += tax_amount if not ttype else 0
+                amount = QtGui.QTableWidgetItem('%.2f'%tmp)
+                tax_amount = QtGui.QTableWidgetItem('%.2f'%tax_amount)
                 self.cart.setItem(i,0,p_id)
                 self.cart.setItem(i,1,qty)
                 self.cart.setItem(i,2,unit)
                 self.cart.setItem(i,3,rate)
-                self.cart.setItem(i,4,amount)
-            self.total_amt.setText(str(self.total_amount))
-                
+                self.cart.setItem(i,4,tax_amount)
+                self.cart.setItem(i,5,amount)
+            self.total_amt.setText('%.2f'%self.total_amount)
+
         elif event.key() == QtCore.Qt.Key_R:
             print("R is pressed!")
         else:
             print("Something else is pressed!")
-
     def setupUi(self, EMS):
         EMS.setObjectName(_fromUtf8("EMS"))
         EMS.resize(1030, 629)
@@ -189,17 +228,17 @@ class Ui_EMS(object):
         self.label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.label.setObjectName(_fromUtf8("label"))
         self.verticalLayout_6.addWidget(self.label)
-        
+
         self.ivn_sb = QtGui.QLineEdit(self.centralwidget)
         self.ivn_sb.setObjectName(_fromUtf8("ivn_sb"))
         self.verticalLayout_6.addWidget(self.ivn_sb)
         self.ivn_sb.textChanged.connect(lambda x:self.query_ivn(self.ivn_sb.text()))
-        
+
         self.ivn = QtGui.QTableWidget(self.centralwidget)
         self.ivn.setObjectName(_fromUtf8("ivn"))
-        self.ivn.setColumnCount(5)
+        self.ivn.setColumnCount(7)
         self.ivn.setObjectName(_fromUtf8("ivn"))
-        self.table_headers = ['Product_id'+' '*25,'Qty','Unit','Rate/Unit','Description'+' '*30]# Ulta crude scaling technique
+        self.table_headers = ['Product_id'+' '*15,'Qty','Unit','Rate/Unit','Description','Tax','HSN/SAC']# Ulta crude scaling technique
         self.ivn.setHorizontalHeaderLabels(self.table_headers)
         self.ivn_tuple = some.display_ivn()
         self.ivn_length = len(self.ivn_tuple)
@@ -211,8 +250,8 @@ class Ui_EMS(object):
         self.ivn.setGridStyle(QtCore.Qt.NoPen)
         #self.ivn.itemClicked.connect(self.append_to_cart)
         self.ivn.resizeColumnsToContents()
-        self.ivn.keyPressEvent = self.append_to_cart
-        
+        self.ivn.keyPressEvent = lambda x:self.append_to_cart(event=x,ttype=self.__get_ttype()) #This function adds selected item to the cart
+
         self.ivn_tuple = sorted(some.display_ivn())
         self.ivn_length = len(self.ivn_tuple)
         self.ivn.setRowCount(self.ivn_length)
@@ -222,12 +261,16 @@ class Ui_EMS(object):
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
+            tax = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][5]))
+            hsc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][6]))
             self.ivn.setItem(i,0,p_id)
             self.ivn.setItem(i,1,qty)
             self.ivn.setItem(i,2,unit)
             self.ivn.setItem(i,3,rate)
             self.ivn.setItem(i,4,desc)
-        
+            self.ivn.setItem(i,5,tax)
+            self.ivn.setItem(i,6,hsc)
+
         self.verticalLayout_6.addWidget(self.ivn)
         self.verticalLayout_5 = QtGui.QVBoxLayout()
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
@@ -287,7 +330,7 @@ class Ui_EMS(object):
         font.setBold(True)
         font.setWeight(75)
         self.c_name.setFont(font)
-        
+
         self.gridLayout.addWidget(self.c_name, 1, 1, 1, 1)
         self.label_5 = QtGui.QLabel(self.centralwidget)
         self.label_5.setObjectName(_fromUtf8("label_5"))
@@ -306,7 +349,7 @@ class Ui_EMS(object):
         self.cart.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.cart.setTextElideMode(QtCore.Qt.ElideRight)
         self.cart.setGridStyle(QtCore.Qt.NoPen)
-        self.cart.itemClicked.connect(self.update_cart_with_amount)
+        self.cart.itemClicked.connect(lambda x: self.update_cart_with_amount(self.__get_ttype()))
         self.cart.resizeColumnsToContents()
         #self.cart.keyPressEvent = self.append_to_cart
 
@@ -331,7 +374,7 @@ class Ui_EMS(object):
         self.clear_item.setObjectName(_fromUtf8("clear_item"))
         self.clear_item.clicked.connect(self.delete_selected_cart_item)
         self.horizontalLayout_4.addWidget(self.clear_item)
-        
+
         #Cart Clearing button
         self.clear_cart = QtGui.QPushButton(self.centralwidget)
         self.clear_cart.setObjectName(_fromUtf8("clear_cart"))
@@ -341,9 +384,9 @@ class Ui_EMS(object):
         #Update  button
         self.update = QtGui.QPushButton(self.centralwidget)
         self.update.setObjectName(_fromUtf8("update"))
-        self.update.clicked.connect(self.update_cart_with_amount)
+        self.update.clicked.connect(lambda x:self.update_cart_with_amount(self.__get_ttype()))
 
-        
+
         self.horizontalLayout_4.addWidget(self.update)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.gridLayout_4.addLayout(self.verticalLayout, 0, 1, 1, 1)
@@ -368,14 +411,14 @@ class Ui_EMS(object):
         self.chk_out = QtGui.QPushButton(self.centralwidget)
         self.chk_out.setObjectName(_fromUtf8("chk_out"))
         self.chk_out.clicked.connect(self.normal_checkout)
-        
+
         self.verticalLayout_2.addWidget(self.chk_out)
-        
+
         #Checkout DUE
         self.due_self = QtGui.QPushButton(self.centralwidget)
         self.due_self.setObjectName(_fromUtf8("due_self"))
         self.due_self.clicked.connect(self.borrow_checkout)
-        
+
         self.verticalLayout_2.addWidget(self.due_self)
         self.print_recipt = QtGui.QPushButton(self.centralwidget)
         #Print Recipt Button
@@ -405,7 +448,6 @@ class Ui_EMS(object):
 
         self.retranslateUi(EMS)
         QtCore.QMetaObject.connectSlotsByName(EMS)
-
     def retranslateUi(self, EMS):
         EMS.setWindowTitle(_translate("EMS", "EMS Custom | Routine Operations ", None))
         self.label.setText(_translate("EMS", "Search the Inventory", None))
@@ -426,8 +468,8 @@ class Ui_EMS(object):
         self.clear_item.setText(_translate("EMS", "Clear Item", None))
         self.clear_cart.setText(_translate("EMS", "Clear Cart", None))
         self.update.setText(_translate("EMS", "Update", None))
-        self.label_4.setText(_translate("EMS", "Rate:", None))
-        self.radioButton_2.setText(_translate("EMS", "Whole Sale", None))
+        self.label_4.setText(_translate("EMS", "Rate", None))
+        self.radioButton_2.setText(_translate("EMS", "Wholesale", None))
         self.radioButton.setText(_translate("EMS", "Retail", None))
         self.chk_out.setText(_translate("EMS", "Check Out", None))
         self.due_self.setText(_translate("EMS", "Due / Self", None))
@@ -446,13 +488,16 @@ class routine_window(QtGui.QMainWindow, Ui_EMS):
         super(routine_window, self).__init__(parent)
         USER = user
         self.setupUi(self)
-        
+
     @QtCore.pyqtSlot()
     def dummy(self):
         self.closed.emit()
         self.close()
     def show_decorator(self,user):
         global some
+        global USER
+        USER = user
+        self.user_label.setText(_translate("EMS", user.capitalize(), None))
         some = ems_core('ems',user)
         self.show()
 
@@ -464,4 +509,3 @@ if __name__ == "__main__":
     ui.setupUi(EMS)
     EMS.show()
     sys.exit(app.exec_())
-

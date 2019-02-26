@@ -124,7 +124,8 @@ class central_control_window(QtGui.QMainWindow, Ui_MainWindow):
     def show_decorator(self,user):
         #print("Username is: %s"%user)
         USER = user
-        self.retranslateUi(self)
+        self.data.setText(_translate("MainWindow",  "%s | %s"%(time.ctime(),user.capitalize()), None))
+        #self.retranslateUi(self)
         self.show()
     @QtCore.pyqtSlot()
     def history_wcall(self):self.history.emit();self.close()
@@ -136,5 +137,3 @@ class central_control_window(QtGui.QMainWindow, Ui_MainWindow):
     def customer_wcall(self):self.customer.emit();self.close()
     @QtCore.pyqtSlot()
     def inventory_wcall(self):self.inventory.emit();self.close()
-    
-

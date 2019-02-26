@@ -112,7 +112,7 @@ class Ui_MainWindow(object):
         #Back button
         self.back = QtGui.QPushButton(self.centralwidget)
         self.back.setObjectName(_fromUtf8("back"))
-        self.back.clicked.connect(self.dummy)
+        self.back.clicked.connect(self.ret_login)
         self.gridLayout.addWidget(self.back, 3, 1, 1, 1)
         
         self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)

@@ -26,7 +26,7 @@ class cmm ( object ):
                 self.cursor.execute('SELECT * FROM cmm where C_id = (?)',(c_id,))
                 l = self.cursor.fetchone()
                 return( bool(l) )
-        
+
         def update (self , c_id , action=False , amount=0 , data = [] ):
                 # Clear dues , Change names et-cetra.
                 # NOte: Once Registered, You can't change the client id.
@@ -57,7 +57,7 @@ class cmm ( object ):
                         query = "UPDATE cmm SET Client = \'%s\',Due = %s,Unit = \'%s\',Net_Transactions = %s ,Description = \'%s\' WHERE C_id = %s;"%data
                         self.cursor.execute(query)
                         self.server.commit()
-                
+
         def append ( self , data ):
                 #Checks and adds Content to the inventory
                 c_id = int(time.time()) # Fresh Unique Customer id Generation
@@ -69,6 +69,14 @@ class cmm ( object ):
         def client_to_id ( self , client ):
                 data = self.search(client)
                 return ( data[0][0] )
+        def id_to_client (self , id):
+            self.cursor.execute('SELECT (Client) FROM cmm where C_id = (?)',(id,))
+            data = self.cursor.fetchall()
+            return(data[0])
+        def c2id (self ,client):
+            self.cursor.execute('SELECT (C_id) FROM cmm where Client LIKE (?)',(str(client)+'%',))
+            data = self.cursor.fetchall()
+            return(data)
         def list_c_names( self ):
                 self.cursor.execute('SELECT (Client) FROM cmm')
                 data = self.cursor.fetchall()
@@ -87,4 +95,4 @@ class cmm ( object ):
 
 
 if __name__ == "__main__":
-        some  = cmm("ems")
+        some  = cmm("../ems")

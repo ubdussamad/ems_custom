@@ -41,13 +41,14 @@ class Ui_MainWindow(object):
             unit = self.ivn.item(i,2).text()
             rate = self.ivn.item(i,3).text()
             desc = self.ivn.item(i,4).text()
-            data = [qty,unit,rate,desc]
+            tax = self.ivn.item(i,5).text()
+            data = [qty,unit,rate,desc,tax]
             #print([i[0] for i in some.imm.return_item_names()])
             is_key = KEY in [i[0] for i in some.imm.return_item_names()]
             
             if not is_key:
-                print("Key is: %s"%(KEY) , is_key)
-                some.imm.append_ivn([KEY,qty,unit,rate,desc])
+                #print("Key is: %s"%(KEY) , is_key)
+                some.imm.append_ivn([KEY,qty,unit,rate,desc,tax])
             else:
                 some.imm.update( KEY , 'total_update' , data )
         self.query_ivn()
@@ -64,11 +65,13 @@ class Ui_MainWindow(object):
         unit = QtGui.QTableWidgetItem(unit)
         rate = QtGui.QTableWidgetItem(rate)
         desc = QtGui.QTableWidgetItem(desc)
+        tax = QtGui.QTableWidgetItem('Tax')
         self.ivn.setItem(index,0,p_id)
         self.ivn.setItem(index,1,qty)
         self.ivn.setItem(index,2,unit)
         self.ivn.setItem(index,3,rate)
         self.ivn.setItem(index,4,desc)
+        self.ivn.setItem(index,5,tax)
         
     def del_item_routine(self):
         #Just delete that itme form the database and update
@@ -95,11 +98,13 @@ class Ui_MainWindow(object):
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
+            tax = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][5]))
             self.ivn.setItem(i,0,p_id)
             self.ivn.setItem(i,1,qty)
             self.ivn.setItem(i,2,unit)
             self.ivn.setItem(i,3,rate)
             self.ivn.setItem(i,4,desc)
+            self.ivn.setItem(i,5,tax)
             
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
@@ -142,8 +147,8 @@ class Ui_MainWindow(object):
         self.ivn_tuple = sorted(some.display_ivn())
         self.ivn_length = len(self.ivn_tuple)
         self.ivn.setRowCount(self.ivn_length)
-        self.ivn.setColumnCount(5)
-        self.ivn_table_headers = ['Product_id'+' '*20,'Qty','Unit','Rate/Unit','Description']# Ulta crude scaling technique
+        self.ivn.setColumnCount(6)
+        self.ivn_table_headers = ['Product_id'+' '*20,'Qty','Unit','Rate/Unit','Description','Tax']# Ulta crude scaling technique
         self.ivn.setHorizontalHeaderLabels(self.ivn_table_headers)
 
         for i in range(0,self.ivn_length):
@@ -152,11 +157,13 @@ class Ui_MainWindow(object):
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
+            tax = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][5]))
             self.ivn.setItem(i,0,p_id)
             self.ivn.setItem(i,1,qty)
             self.ivn.setItem(i,2,unit)
             self.ivn.setItem(i,3,rate)
             self.ivn.setItem(i,4,desc)
+            self.ivn.setItem(i,5,tax)
 
         
         self.verticalLayout.addWidget(self.ivn)

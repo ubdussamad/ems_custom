@@ -36,7 +36,7 @@ class imm ( object ):
         elif u_type == 'total_update':
             # Updating Data of an Specific Product
             data = (*data,p_id)
-            query = "UPDATE ivn SET Quantity = \'%s\',Unit = \'%s\',Unit_Rate = \'%s\',Description = \'%s\' WHERE P_id = \'%s\';"%(data)
+            query = "UPDATE ivn SET Quantity = \'%s\',Unit = \'%s\',Unit_Rate = \'%s\',Description = \'%s\',Tax = \'%s\' WHERE P_id = \'%s\';"%(data)
             self.cursor.execute(query)
             self.server.commit()
         else:
@@ -45,7 +45,7 @@ class imm ( object ):
 
     def append_ivn ( self , data ):
         #Checks and adds Content to the inventory
-        self.cursor.execute("INSERT INTO ivn ( P_id, Quantity, Unit, Unit_Rate, Description ) VALUES (?,?,?,?,?)",
+        self.cursor.execute("INSERT INTO ivn ( P_id, Quantity, Unit, Unit_Rate, Description , Tax ) VALUES (?,?,?,?,?,?)",
                             (*data,))
         self.server.commit()
     def return_item_names(self):

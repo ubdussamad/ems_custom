@@ -1,0 +1,95 @@
+# EMS Utils
+# Contains:
+# IMM ( Inventory Management Module)
+# LMM ( Log / Hisotry Management Module)
+# CMM ( Client Management Module)
+
+____________________________________________________________
+lmm log file blue print
+____________________________________________________________
+Transaction id || Time                     || C_ID/Name || Net Amount || products 
+101            || Fri Feb  8 13:27:39 2019 ||1          || 110132     || a,b,c,d,e,f
+-------------------------------------------------------------
+
+____________________________________________________________
+ivn log file
+_____________________________________________________________
+Product_id    || Qty || Unit || Mrp Rate/Unit||Description
+RED_NORMAL    || 100 || Kg   || 20           || Just a normal red color
+--------------------------------------------------------------
+
+______________________________________________________________
+cmm log file
+______________________________________________________________
+Client name || Due || Unit  || Total Transactions || Description
+Soman       || 50  || Rupee || 10000             || Soman the woman who is roman
+Makshuf     || 0   || Rupee || 2000               || Makshuf broooooooooooooooooo
+---------------------------------------------------------------
+
+Cart Layout:
+P_id || Qty
+
+________________________________________________________________________________
+CMM: (Client Management Module)
+_________________________________________________________________________________
+create_db() // Creates Database Named "cmm"
+-------------------------------
+update ( c_id , type = d_clr/d_add/u_acc , amount=0 , data)
+// Updates the database for c_id
+due is ->
+ 1. d_clr // Clear due by amount
+ 2. d_add // Add due by amount
+ 3. u_acc // Update acoount transaction by amount
+data is of format -> [ Client, Due, Unit, Net_Transactions,Description ]
+-------------------------------
+append ( data ) // Genrates a new client with automatic client_id
+
+data is of format -> [ Client, Due, Unit, Net_Transactions,Description ]
+-------------------------------
+search ( client = '' ) // Searches for Clients et-cetra
+
+if client is left unassigned , the func returns a tuple of available clients
+
+
+___________________________________________________________________________________
+IMM: (Inventory Management Module)
+___________________________________________________________________________________
+create_db() // Creates database Named "ivn"
+---------------------------------
+update ( p_id , u_type , data )
+
+utype can be ->
+ 1. [ chk_out ] , data = [qty]
+ 2. [ append_stk ] , data = [qty]
+ 3. [ del_product ] , data = []
+ 4. [ total_update ] , data = [Qty, Unit, Unit_Rate, Description]
+-----------------------------------
+append_ivn ( data )
+
+data is of type ->  [P_id, Qty, Unit, Unit_Rate, Description]
+------------------------------------
+search ( product='' )
+
+if product is left unassigned, the func returns a tuple of available products
+___________________________________________________________________________________
+
+___________________________________________________________________________________
+LMM: (Log/History Management Module)
+___________________________________________________________________________________
+create_db() // Creates database Named "hmm"
+---------------------------------
+update( t_id ) // Deleting by transaction id
+------------------------------------
+append_log (data)
+
+data is of type-> [ T_id , Time , C_id ,  Net_Transactions , Products)
+------------------------------------
+search ( key='' , key_type)
+
+key_type can be ->
+ 1. 0 // Search by T_id
+ 2. 1 // Search by Time
+ 3. 2 // Search by Client_Name
+
+if key is left unassigned, the func returns a tuple of all history
+___________________________________________________________________________________

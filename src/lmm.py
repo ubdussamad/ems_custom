@@ -33,7 +33,7 @@ class lmm ( object ):
                 data = self.cursor.fetchall()
                 products = []
                 for i in data:
-                        l = i[0].split(',')
+                        l = [k.split('|')[0] for k in i[0].split(',')]
                         for j in l:
                                 products.append(j)
                 s = set(products)

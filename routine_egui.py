@@ -18,7 +18,7 @@ import os
 with open('resources/recipt.config') as file:
     recipt_data = file.read()
     recipt_data = recipt_data.strip('\n').split('|')
-    
+
 GRAND_TOTAL_AMOUNT_FOR_SESSION = 0
 LAST_SALE_AMOUNT = 0
 LINUX = False
@@ -57,6 +57,7 @@ class Ui_EMS(object):
         self.clear_cart_routine()
         if ret != -1:
             self.print_recipt.setEnabled(True)
+        self.query_ivn(self.ivn_sb.text())
     def borrow_checkout(self):
         if self.__get_ttype():
             return
@@ -69,9 +70,10 @@ class Ui_EMS(object):
         self.clear_cart_routine()
         if ret != -1:
             self.print_recipt.setEnabled(True)
+        self.query_ivn(self.ivn_sb.text())
 
     def print_recipt_routine(self):
-        recipt = genrate_recipt(some.recipt)
+        recipt = genrate_recipt(some.recipt,self.__get_ttype())
         if LINUX:
             os.system(recipt_data[2]%recipt)
         else:
@@ -99,7 +101,21 @@ class Ui_EMS(object):
         rc,cc= self.cart.rowCount() , self.cart.columnCount()
         for i,j in zip(range(rc),range(cc)):
             some.cart = sorted(some.cart)
+            p_id = self.cart.item(i,0).text()
+            ivn_qty = some.display_ivn(p_id)
+            ivn_qty  = ivn_qty[0][1]
             amt = self.cart.item(i,1).text()
+            if float(ivn_qty) < float(amt):
+                # Raise Alarms
+                self.label_7.setText("INFO")
+                #self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
+                amt = ivn_qty
+                self.time_label.setText("Amount of %s exceeded the qty! Reducing Qty."%(p_id,))
+                self.time_label.setStyleSheet(_fromUtf8("color: rgb(255,0,0);"))
+            else:
+                self.time_label.setText(time.ctime())
+                self.label_7.setText("Date")
+                self.time_label.setStyleSheet(_fromUtf8(""))
             rate = self.cart.item(i,3).text()
             # Updating internal cart tuple with the modified data
             some.cart[i][1] = amt

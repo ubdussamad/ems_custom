@@ -15,7 +15,8 @@ class imm ( object ):
         self.server = sqlite3.connect('%s.db'%self.id)
         self.cursor = self.server.cursor()
     def create_db (self):
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS ivn(P_id TEXT,Quantity REAL,Unit TEXT,Unit_Rate REAL,Description TEXT)")
+        pass
+        #self.cursor.execute("CREATE TABLE IF NOT EXISTS ivn(P_id TEXT,Quantity REAL,Unit TEXT,Unit_Rate REAL,Description TEXT)")
 
     def update( self, p_id, u_type, data ):
         # Here i am strictly assuming that the p_id wouldn't be negative.
@@ -32,20 +33,33 @@ class imm ( object ):
             # Deleting the product completely from the inventory
             self.cursor.execute('DELETE FROM ivn WHERE P_id = (?)', (p_id,))
             self.server.commit()
-            
+
         elif u_type == 'total_update':
             # Updating Data of an Specific Product
             data = (*data,p_id)
-            query = "UPDATE ivn SET Quantity = \'%s\',Unit = \'%s\',Unit_Rate = \'%s\',Description = \'%s\',Tax = \'%s\' WHERE P_id = \'%s\';"%(data)
+            query = "UPDATE ivn SET Quantity = \'%s\',Unit = \'%s\',Unit_Rate = \'%s\',Description = \'%s\',Tax = \'%s\', `HSN/SAC` = \'%s\' , Stock_Price = \'%s\'   WHERE P_id = \'%s\';"%(data)
+            self.cursor.execute(query)
+            self.server.commit()
+
+        elif u_type == 'mod_rate':
+            data = (*data,p_id)
+            query = "UPDATE ivn SET stkp_history = \'%s\' WHERE P_id = \'%s\';"%(data)
             self.cursor.execute(query)
             self.server.commit()
         else:
             print("Bad Update Type!")
             return(-1)
+    def get_mod_rate( self, p_id):
+        self.cursor.execute('SELECT stkp_history FROM ivn WHERE P_id = (?)',(p_id,))
+        data = self.cursor.fetchone()[0] #25:30,27:60
+        data = data.split(',') if data else []
+        return(data)
+
+
 
     def append_ivn ( self , data ):
         #Checks and adds Content to the inventory
-        self.cursor.execute("INSERT INTO ivn ( P_id, Quantity, Unit, Unit_Rate, Description , Tax ) VALUES (?,?,?,?,?,?)",
+        self.cursor.execute("INSERT INTO ivn ( `P_id`, `Quantity`, `Unit`, `Unit_Rate`, `Description`, `Tax` ,`HSN/SAC`, `Stock_Price`) VALUES (?,?,?,?,?,?,?,?)",
                             (*data,))
         self.server.commit()
     def return_item_names(self):
@@ -59,11 +73,11 @@ class imm ( object ):
         return(data)
 
 
-    
+
     def delete(self, p_id):
         self.cursor.execute('DELETE FROM ivn WHERE P_id = (?)',(p_id,))
         self.server.commit()
-        
+
     def search ( self , product= ''):
         # Returns a subsetset of self.data contaning the keywords
         # Returns a list of lists containing only names whic matcvh it
@@ -74,4 +88,4 @@ class imm ( object ):
         return(data)
 
 if __name__ == "__main__":
-    some  = imm('ems')
+    some  = imm('../ems')

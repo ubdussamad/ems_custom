@@ -169,6 +169,7 @@ class Ui_MainWindow(object):
         # Select Month
         self.month = QtGui.QComboBox(self.centralwidget)
         self.month.setObjectName(_fromUtf8("month"))
+        self.month.currentIndexChanged.connect(self.calc_total)
         self.horizontalLayout.addWidget(self.month)
         self.label_5 = QtGui.QLabel(self.centralwidget)
         self.label_5.setObjectName(_fromUtf8("label_5"))

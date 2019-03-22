@@ -169,7 +169,7 @@ class Ui_MainWindow(object):
         self.ivn.setRowCount(self.ivn_length)
         for i in range(0,self.ivn_length):
             p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][1]) if float(self.ivn_tuple[i][1]) > 0.000 else '0.0')
+            qty = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][1]))
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
@@ -243,12 +243,12 @@ class Ui_MainWindow(object):
         self.ivn_length = len(self.ivn_tuple)
         self.ivn.setRowCount(self.ivn_length)
         self.ivn.setColumnCount(8)
-        self.ivn_table_headers = ['Product'+' '*20,'Qty','Unit','Rate/Unit',
+        self.ivn_table_headers = ['Product_id'+' '*20,'Qty','Unit','Rate/Unit',
         'Description','Tax','HSN/SAC','Stock Price']# Ulta crude scaling technique
         self.ivn.setHorizontalHeaderLabels(self.ivn_table_headers)
         for i in range(0,self.ivn_length):
             p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem( str(self.ivn_tuple[i][1]) if float(self.ivn_tuple[i][1]) > 0.000 else '0.0' )
+            qty = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][1]))
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
@@ -343,7 +343,6 @@ class Ui_MainWindow(object):
         # Back button
         self.back = QtGui.QPushButton(self.centralwidget)
         self.back.setObjectName(_fromUtf8("back"))
-        self.back.clicked.connect(self.ret_login)
         self.horizontalLayout.addWidget(self.back)
 
         # Edit tac check box
@@ -386,20 +385,6 @@ class Ui_MainWindow(object):
         self.etax.setText(_translate("MainWindow", "Edit Tax", None))
         self.eqty.setText(_translate("MainWindow", "Edit Qty", None))
 
-
-class inventory_management_window(QtGui.QMainWindow, Ui_MainWindow):
-    ret = QtCore.pyqtSignal()
-    def ret_login(self):
-        self.ret.emit()
-        self.close()
-    def __init__(self, parent=None , user = ''):
-        super(inventory_management_window, self).__init__(parent)
-        USER = user
-        self.setupUi(self)
-    def show_decorator(self,user):
-        global some
-        some = ems_core('ems',user)
-        self.show()
 
 if __name__ == "__main__":
     import sys

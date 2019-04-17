@@ -64,7 +64,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setStyleSheet(_fromUtf8("background-image: url(:/backgrounds/resources/bg_tile.jpeg);"))
+        MainWindow.setStyleSheet(_fromUtf8("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #1D4350, stop:1 #A43931);"))
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.label = QtGui.QLabel(self.centralwidget)
@@ -84,7 +84,7 @@ class Ui_MainWindow(object):
         self.label.setObjectName(_fromUtf8("label"))
         self.lineEdit = QtGui.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(290, 190, 241, 27))
-        self.lineEdit.setStyleSheet(_fromUtf8("color: rgb(200,200,200);\n"
+        self.lineEdit.setStyleSheet(_fromUtf8("color: rgb(150,150,150);\n"
 "background-color: rgba(255, 255, 255, 0);\n"
 "selection-background-color: rgba(255, 255, 255, 0);\n"
 "alternate-background-color: rgba(255, 255, 255, 0);\n"
@@ -95,7 +95,7 @@ class Ui_MainWindow(object):
         self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
         self.lineEdit_2 = QtGui.QLineEdit(self.centralwidget)
         self.lineEdit_2.setGeometry(QtCore.QRect(290, 240, 241, 27))
-        self.lineEdit_2.setStyleSheet(_fromUtf8("color: rgb(200,200,200);\n"
+        self.lineEdit_2.setStyleSheet(_fromUtf8("color: rgb(150,150,150);\n"
 "background-color: rgba(255, 255, 255, 0);\n"
 "selection-background-color: rgba(255, 255, 255, 0);\n"
 "alternate-background-color: rgba(255, 255, 255, 0);\n"
@@ -104,39 +104,33 @@ class Ui_MainWindow(object):
 "border-bottom-color: rgba(255, 255, 255, 0);\n"
 "border-left-color: rgba(255, 255, 255, 0);"))
         self.lineEdit_2.setObjectName(_fromUtf8("lineEdit_2"))
+        self.lineEdit_2.setEchoMode(QtGui.QLineEdit.Password);
         self.lineEdit_2.textChanged.connect(self.login)
         self.pushButton = QtGui.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(350, 290, 111, 31))
         self.pushButton.setStyleSheet(_fromUtf8("color: rgb(255, 255, 255);\n"
-"background-color: rgba(255, 255, 255, 0);\n"
-"selection-background-color: rgba(255, 255, 255, 0);\n"
-"alternate-background-color: rgba(255, 255, 255, 0);\n"
-"border-color: rgba(255, 255, 255, 0);\n"
-"border-right-color: rgba(255, 255, 255, 0);\n"
-"border-bottom-color: rgba(255, 255, 255, 0);\n"
-"border-left-color: rgba(255, 255, 255, 0);"))
+"background-color: rgba(255, 255, 255, 10);\n"
+"selection-background-color: rgba(255, 255, 255, 10);\n"
+"alternate-background-color: rgba(255, 255, 255, 10);\n"
+"border-color: rgba(255, 255, 255, 200);\n"
+"border-right-color: rgba(255, 255, 255, 200);\n"
+"border-bottom-color: rgba(255, 255, 255, 200);\n"
+"border-left-color: rgba(255, 255, 255, 200);"))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.pushButton.clicked.connect(self.login)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 25))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "EMS | Login", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Login | EMS", None))
         self.label.setText(_translate("MainWindow", "Login | EMS", None))
         self.lineEdit.setPlaceholderText(_translate("MainWindow", "Username", None))
         self.lineEdit_2.setPlaceholderText(_translate("MainWindow", "Password", None))
         self.pushButton.setText(_translate("MainWindow", "Login", None))
 
-from resources import resource_rc
+
 class XMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     closed = QtCore.pyqtSignal()
 
@@ -147,6 +141,9 @@ class XMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def dummy(self):
         self.closed.emit()
         self.close()
+    def show_decorator(self):
+        self.lineEdit_2.clear()
+        self.show()
 
 import sys
 
@@ -157,7 +154,7 @@ def main():
         
     wa = XMainWindow()
     wb = central_control_window(user=USER)
-    wb.ret.connect(wa.show)
+    wb.ret.connect(wa.show_decorator)
     wc = client_control_window()
     wd = inventory_management_window()
     we = routine_window()

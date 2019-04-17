@@ -57,6 +57,8 @@ class Ui_EMS(object):
         self.clear_cart_routine()
         if ret != -1:
             self.print_recipt.setEnabled(True)
+        else:
+            self.statusbar.showMessage("Empty Cart, Please Fill Cart.",2000)
         self.query_ivn(self.ivn_sb.text())
     def borrow_checkout(self):
         if self.__get_ttype():
@@ -66,18 +68,21 @@ class Ui_EMS(object):
         LAST_SALE_AMOUNT = float(self.total_amt.text())
         GRAND_TOTAL_AMOUNT_FOR_SESSION += float(self.total_amt.text())
         self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
-        some.check_out("borrow", self.__get_ttype())
+        ret = some.check_out("borrow", self.__get_ttype())
         self.clear_cart_routine()
         if ret != -1:
             self.print_recipt.setEnabled(True)
+        else:
+            self.statusbar.showMessage("Empty Cart, Please Fill Cart.",2000)
         self.query_ivn(self.ivn_sb.text())
 
     def print_recipt_routine(self):
         recipt = genrate_recipt(some.recipt,self.__get_ttype())
         if LINUX:
+            self.statusbar.showMessage("Printing.... Please Wait (Posix)",4000)
             os.system(recipt_data[2]%recipt)
         else:
-            print("Currently Working on Windows")
+            self.statusbar.showMessage("Printing.... Please Wait (Nt)",4000)
             os.system(recipt_data[3]%recipt)
 
     def customer_change(self):
@@ -98,6 +103,9 @@ class Ui_EMS(object):
             self.due_self.setEnabled(False)
         else:
             self.due_self.setEnabled(True)
+        if not any(some.cart):
+            self.statusbar.showMessage('Empty cart, 0x1')
+            return
         rc,cc= self.cart.rowCount() , self.cart.columnCount()
         for i,j in zip(range(rc),range(cc)):
             some.cart = sorted(some.cart)
@@ -107,15 +115,8 @@ class Ui_EMS(object):
             amt = self.cart.item(i,1).text()
             if float(ivn_qty) < float(amt):
                 # Raise Alarms
-                self.label_7.setText("INFO")
-                #self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
                 amt = ivn_qty
-                self.time_label.setText("Amount of %s exceeded the qty! Reducing Qty."%(p_id,))
-                self.time_label.setStyleSheet(_fromUtf8("color: rgb(255,0,0);"))
-            else:
-                self.time_label.setText(time.ctime())
-                self.label_7.setText("Date")
-                self.time_label.setStyleSheet(_fromUtf8(""))
+                self.statusbar.showMessage("Amount of %s exceeded the qty! Reducing Qty."%p_id,4000)
             rate = self.cart.item(i,3).text()
             # Updating internal cart tuple with the modified data
             some.cart[i][1] = amt
@@ -245,6 +246,9 @@ class Ui_EMS(object):
         self.label.setObjectName(_fromUtf8("label"))
         self.verticalLayout_6.addWidget(self.label)
 
+        deleteShortcut = QtGui.QShortcut(QtGui.QKeySequence('Esc'),self.centralwidget)
+        deleteShortcut.activated.connect(self.ret_login)
+
         self.ivn_sb = QtGui.QLineEdit(self.centralwidget)
         self.ivn_sb.setObjectName(_fromUtf8("ivn_sb"))
         self.verticalLayout_6.addWidget(self.ivn_sb)
@@ -260,6 +264,10 @@ class Ui_EMS(object):
         self.ivn_length = len(self.ivn_tuple)
         self.ivn.setRowCount(self.ivn_length)
         self.ivn.setAlternatingRowColors(True)
+        self.ivn.setSortingEnabled(True)
+        self.ivn.horizontalHeader().setSortIndicatorShown(True)
+        self.ivn.horizontalHeader().setStretchLastSection(True)
+        self.ivn.verticalHeader().setSortIndicatorShown(True)
         self.ivn.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.ivn.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.ivn.setTextElideMode(QtCore.Qt.ElideRight)
@@ -371,6 +379,11 @@ class Ui_EMS(object):
 
 
         self.verticalLayout.addWidget(self.cart)
+
+        #Shortcuts testing utility
+        deleteShortcut = QtGui.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Delete),self.cart)
+        deleteShortcut.activated.connect(self.delete_selected_cart_item)
+
         self.horizontalLayout_5 = QtGui.QHBoxLayout()
         self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
         self.label_6 = QtGui.QLabel(self.centralwidget)
@@ -454,10 +467,10 @@ class Ui_EMS(object):
         self.gridLayout_3.addLayout(self.verticalLayout_2, 1, 0, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_3, 0, 2, 1, 1)
         EMS.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(EMS)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1030, 25))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        EMS.setMenuBar(self.menubar)
+        #self.menubar = QtGui.QMenuBar(EMS)
+        #self.menubar.setGeometry(QtCore.QRect(0, 0, 1030, 25))
+        #self.menubar.setObjectName(_fromUtf8("menubar"))
+        #EMS.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(EMS)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         EMS.setStatusBar(self.statusbar)
@@ -515,6 +528,10 @@ class routine_window(QtGui.QMainWindow, Ui_EMS):
         USER = user
         self.user_label.setText(_translate("EMS", user.capitalize(), None))
         some = ems_core('ems',user)
+        self.comboBox.clear()
+        for text in some.display_all_customers():
+            self.comboBox.addItem(text[0])
+        self.query_ivn()
         self.show()
 
 if __name__ == "__main__":

@@ -35,7 +35,7 @@ class Ui_MainWindow(object):
    #def dummy(self,*args):
     #    self.close()
     def login(self):
-        self.server = sqlite3.connect('ems.db')
+        self.server = sqlite3.connect('data/ems.db')
         self.cursor = self.server.cursor()
         user = self.lineEdit.text()
         self.cursor.execute('SELECT (password) FROM credentials WHERE user = (?)',

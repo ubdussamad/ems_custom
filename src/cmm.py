@@ -5,7 +5,7 @@
 import sqlite3
 import time
 import datetime
-import math
+import math,os
 
 DEBUG  = 0
 VERBOSE_DEBUG = 0
@@ -13,7 +13,7 @@ VERBOSE_DEBUG = 0
 class cmm ( object ):
         def __init__( self , id):
                 self.id = id
-                self.server = sqlite3.connect('%s.db'%self.id)
+                self.server = sqlite3.connect(os.path.join('data','%s.db'%self.id))
                 self.cursor = self.server.cursor()
 
         def create_db (self):

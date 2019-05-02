@@ -5,7 +5,7 @@
 import sqlite3
 import time
 import datetime
-import math
+import math,os
 
 DEBUG  = 0
 VERBOSE_DEBUG = 0
@@ -13,7 +13,7 @@ VERBOSE_DEBUG = 0
 class lmm ( object ):
         def __init__( self , id):
                 self.id = id
-                self.server = sqlite3.connect('%s.db'%self.id)
+                self.server = sqlite3.connect(os.path.join('data','%s.db'%self.id))
                 self.cursor = self.server.cursor()
                 
         def create_db (self):
@@ -25,7 +25,7 @@ class lmm ( object ):
                 self.server.commit()
                 
         def append_log ( self, data ):
-                self.cursor.execute("INSERT INTO hmm (T_id, Time, C_id, Net_Amt, Products) VALUES (?,?,?,?,?)",(*data,))
+                self.cursor.execute("INSERT INTO hmm (T_id, Time, C_id, Net_Amt, Products, Bb) VALUES (?,?,?,?,?,?)",(*data,))
                 self.server.commit()
 
         def most_bought(self):
@@ -52,25 +52,16 @@ class lmm ( object ):
                 # Return a list of lists containing only fileds which have closure
                 # Key types are -> 0:Transaction ID // 1: Date and time // 2: Customer  
                 if not key:
-                        self.cursor.execute('SELECT * FROM hmm')
+                        self.cursor.execute('SELECT  hmm.T_id,hmm.Time,cmm.Client,hmm.Net_Amt,hmm.Products,hmm.Bb FROM   hmm INNER JOIN cmm ON hmm.C_id = cmm.C_id')#'SELECT * FROM hmm')
                 elif key_type == 0:
-                        self.cursor.execute('SELECT * FROM hmm WHERE T_id LIKE (?)',
+                        self.cursor.execute('SELECT  hmm.T_id,hmm.Time,cmm.Client,hmm.Net_Amt,hmm.Products,hmm.Bb FROM   hmm INNER JOIN cmm ON hmm.C_id = cmm.C_id WHERE hmm.T_id LIKE (?)',
                                     (key+"%",))
                 elif key_type == 1:
-                        self.cursor.execute('SELECT * FROM hmm WHERE Time LIKE (?)',
+                        self.cursor.execute('SELECT  hmm.T_id,hmm.Time,cmm.Client,hmm.Net_Amt,hmm.Products,hmm.Bb FROM   hmm INNER JOIN cmm ON hmm.C_id = cmm.C_id WHERE hmm.Time LIKE (?)',
                                     (key+"%",))
                 elif key_type == 2:
-                        # Must write a routine to convert Customer name to C_id
-                        self.cursor.execute('SELECT * FROM cmm WHERE Client LIKE (?)',
-                                    (key+"%",))
-                        try:
-                                tmp = self.cursor.fetchall()[0][0]
-                        except:
-                                return []
-                        self.cursor.execute('SELECT * FROM hmm WHERE C_id = (?)',
-                                    (tmp,))
-                else:
-                        self.cursor.execute('SELECT * FROM hmm')
+                        self.cursor.execute('SELECT  hmm.T_id,hmm.Time,cmm.Client,hmm.Net_Amt,hmm.Products,hmm.Bb FROM   hmm INNER JOIN cmm ON hmm.C_id = cmm.C_id WHERE cmm.Client LIKE (?)',
+                                    (key+'%',))
                 data = self.cursor.fetchall()
                 return(data)
 

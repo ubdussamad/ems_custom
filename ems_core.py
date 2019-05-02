@@ -166,8 +166,8 @@ class ems_core ( object):
         date = str(time.ctime())
         if not ttype:  # Logging the transaction in the log
             self.calc_profit(self.cart,ttype)
-            self.lmm.append_log([transaction_id,date,self.c_id,#P_id,qty,rate,tax
-                             self.total_amount,','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart])])
+            self.lmm.append_log([transaction_id,date,self.c_id,#P_id,qty,rate,tax , Billed BY
+                             self.total_amount,','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart]),self.agent])
 
         else:
             self.calc_profit(self.cart,ttype)

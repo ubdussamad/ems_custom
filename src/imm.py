@@ -4,7 +4,7 @@
 # IMM ( Inventory Management Module)
 import sqlite3
 import time
-import math
+import math,os
 
 DEBUG = False
 VERBOSE_DEBUG = False
@@ -12,7 +12,7 @@ VERBOSE_DEBUG = False
 class imm ( object ):
     def __init__ ( self , id):
         self.id = id
-        self.server = sqlite3.connect('%s.db'%self.id)
+        self.server = sqlite3.connect(os.path.join('data','%s.db'%self.id))
         self.cursor = self.server.cursor()
     def create_db (self):
         pass

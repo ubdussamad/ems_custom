@@ -151,13 +151,20 @@ class Ui_MainWindow(object):
     def del_item_routine(self):
         #Just delete that itme form the database and update
         indexes = [i.row() for i in self.ivn.selectionModel().selectedRows()]
-        if indexes:
-            index = indexes[0]
-            p_id = self.ivn.item(index,0).text()
-            self.ivn.removeRow(index)
-            some.imm.delete(p_id)
+        if not indexes:
+            return
+        index = indexes[0]
+        p_id = self.ivn.item(index,0).text()
+        reply = QtGui.QMessageBox.question(self.centralwidget, 'Delete Item %s from Inventory??'%p_id.upper(), 
+                 'Are you sure? \nIf you delete this item %s, all it\'s data will be lost!'%p_id.upper(), QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+        if reply == QtGui.QMessageBox.Yes:
+            if indexes:
+                self.ivn.removeRow(index)
+                some.imm.delete(p_id)
+            else:
+                print(False)
         else:
-            print(False)
+            pass
     def clear_ivn_routine(self):
         self.ivn.setRowCount(0);
         some.ivn = []
@@ -169,7 +176,7 @@ class Ui_MainWindow(object):
         self.ivn.setRowCount(self.ivn_length)
         for i in range(0,self.ivn_length):
             p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][1]) if float(self.ivn_tuple[i][1]) > 0.000 else '0.0')
+            qty = QtGui.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
@@ -208,7 +215,10 @@ class Ui_MainWindow(object):
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         deleteShortcut = QtGui.QShortcut(QtGui.QKeySequence('Esc'),self.centralwidget)
-        deleteShortcut.activated.connect(self.ret_login)
+        try:
+            deleteShortcut.activated.connect(self.ret_login)
+        except:
+            print("Unit Testing Mode")
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.centralwidget)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
         self.verticalLayout_2 = QtGui.QVBoxLayout()
@@ -245,12 +255,12 @@ class Ui_MainWindow(object):
         self.ivn_length = len(self.ivn_tuple)
         self.ivn.setRowCount(self.ivn_length)
         self.ivn.setColumnCount(8)
-        self.ivn_table_headers = ['Product'+' '*20,'Qty','Unit','Rate/Unit',
-        'Description','Tax','HSN/SAC','Stock Price']# Ulta crude scaling technique
+        self.ivn_table_headers = ['Product'+' '*20,'Qty','Unit','Rate Untaxed',
+        'Description','Tax','HSN/SAC','Bought Rate']# Ulta crude scaling technique
         self.ivn.setHorizontalHeaderLabels(self.ivn_table_headers)
         for i in range(0,self.ivn_length):
             p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem( str(self.ivn_tuple[i][1]) if float(self.ivn_tuple[i][1]) > 0.000 else '0.0' )
+            qty = QtGui.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
@@ -345,7 +355,10 @@ class Ui_MainWindow(object):
         # Back button
         self.back = QtGui.QPushButton(self.centralwidget)
         self.back.setObjectName(_fromUtf8("back"))
-        self.back.clicked.connect(self.ret_login)
+        try:
+            self.back.clicked.connect(self.ret_login)
+        except:
+            pass
         self.horizontalLayout.addWidget(self.back)
 
         # Edit tac check box
@@ -389,19 +402,7 @@ class Ui_MainWindow(object):
         self.eqty.setText(_translate("MainWindow", "Edit Qty", None))
 
 
-class inventory_management_window(QtGui.QMainWindow, Ui_MainWindow):
-    ret = QtCore.pyqtSignal()
-    def ret_login(self):
-        self.ret.emit()
-        self.close()
-    def __init__(self, parent=None , user = ''):
-        super(inventory_management_window, self).__init__(parent)
-        USER = user
-        self.setupUi(self)
-    def show_decorator(self,user):
-        global some
-        some = ems_core('ems',user)
-        self.show()
+
 
 if __name__ == "__main__":
     import sys
@@ -411,3 +412,17 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
+else:
+    class inventory_management_window(QtGui.QMainWindow, Ui_MainWindow):
+        ret = QtCore.pyqtSignal()
+        def ret_login(self):
+            self.ret.emit()
+            self.close()
+        def __init__(self, parent=None , user = ''):
+            super(inventory_management_window, self).__init__(parent)
+            USER = user
+            self.setupUi(self)
+        def show_decorator(self,user):
+            global some
+            some = ems_core('ems',user)
+            self.show()

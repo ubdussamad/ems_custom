@@ -158,9 +158,6 @@ class ems_core ( object):
         elif payment_type == "borrow" and not ttype: # 2 ask
             # Borrowing
             self.cmm.update( self.c_id , 'd_add' ,self.total_amount)
-        if ttype:
-            #log selfwhere else
-            pass
 
         transaction_id = int(time.time())
         date = str(time.ctime())
@@ -191,8 +188,8 @@ class ems_core ( object):
                    "data":data , "Billed by": self.agent,
                    "Payment Type": p_type , "Total Amount":total_amount , "Client": self.c_id}
         return(recipt)
-    def display_ivn(self, p_id = ''):
-        return self.imm.search(p_id)
+    def display_ivn(self, p_id = '',key = 'P'):
+        return self.imm.search(p_id,key)
     def id2c(self,id):
         return(self.cmm.id_to_client(id)[0])
     def c2id(self,cl):

@@ -12,19 +12,13 @@ class Render_html:
     def embed_content(self,text):
         prefix_string = '''<html><head><title> Recipt #12345678 </title>
 <style>
-@font-face {
-  font-family: "Kimberley";
-  src: url(resources/fake_receipt.ttf) format("truetype");
-}
-body {width:400px;font-family: "Kimberley", sans-serif }
-table {width:400px;}
-td,th {padding-right:10px;word-wrap: break-word;
-max-width: 100px;}
+body {text-align:center;font-family: "Fake Receipt", sans-serif }
+td,th {padding-right:10px;word-wrap: break-word;max-width: 150px;}
 </style>
 </head><body>'''
         postfix_string = '''
-<br/>
-<b>GRAND TOTAL: </b>%s₹
+<br/><br/>
+<b>GRAND TOTAL: </b>%s Rupees
 <p style=\'font-size:10px;\'><b>Note:</b> The grand total amt is inclusive of all taxes.</br>
 Incase of any glitch in amount,tax,etcetera, contact the seller.</p>
 </body></html>'''%self.data['Total Amount']
@@ -32,10 +26,17 @@ Incase of any glitch in amount,tax,etcetera, contact the seller.</p>
 
     
     def render(self):
+        #heads = ['data'] if not self.ttype else ['data',] 
         prefix = '<h3 align=\'center\'>Nouman Colors</h3>'
-        meta_headers = ''.join([''.join(['<h8><b>',keys,'</b></h8>:  ',values,'<br/>']) for keys,values in self.data.items() if keys != 'data'])
-        infix = '<br/><table><tr><th>'
-        formatter = '<tr><td>'+'</td></tr><tr><td>'.join([ '</td><td>'.join(i) for i in self.data['data']])+'</td></tr>'
+        meta_headers = ''.join([''.join(['<h8><b>',keys,'</b></h8>:  ',str(values),
+            '<br/>']) for keys,values in self.data.items() if keys != 'data'])
+        infix = '<br/><hr/><table align=\'center\'><tr><th>'
+        if self.ttype:
+            objects = [ [k for j,k in enumerate(i) if j not in [1,4]] for i in self.data['data']]
+        else:
+            objects = self.data['data']
+        print(objects)
+        formatter = '<tr><td>'+'</td></tr><tr><td>'.join([ '</td><td>'.join(i) for i in objects])+'</td></tr>'
         postfix = '</td></tr></table>'
         if not self.ttype:
             head = 'Product</th><th>HSN</th><th>Qty(U)</th><th>Rate/U</th><th>Tax</th><th>Total</th></tr>'
@@ -49,7 +50,7 @@ Incase of any glitch in amount,tax,etcetera, contact the seller.</p>
         
   
 d={'Client': '0',
- 'data': [['TEST', 'ABCDEF', '210.35 Kg', '50.0', '5000.50' , '55000.0' ],
+ 'data': [['TEST', 'ABCDEFSDFGHJKLDFGJKL', '210.35 Kg', '50.0', '5000.50' , '55000.0' ],
           ['TEST', 'DEF', '1.0 Kg', '12.0', '1.2' ,'13.2' ]],
  'Payment Type': 'current',
  'Date': 'Sun Feb 17 17:45:00 2019',

@@ -70,15 +70,21 @@ class Ui_MainWindow(object):
         self.query_ivn()
 
     def del_item_routine(self):
-        #Just delete that itme form the database and update
+        #Just delete that item form the database and update
         indexes = [i.row() for i in self.ivn.selectionModel().selectedRows()]
-        if indexes:
-            index = indexes[0]
-            p_id = self.ivn.item(index,0).text()
-            self.ivn.removeRow(index)
-            some.cmm.delete(p_id)
+        usr = self.ivn.item(indexes[0],1).text()
+        reply = QtGui.QMessageBox.question(self.centralwidget, 'Delete User %s from System??'%usr.upper(), 
+                 'Are you sure? \nIf you delete this user %s, all his data/dues will be lost!'%usr.upper(), QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+        if reply == QtGui.QMessageBox.Yes:
+            if indexes:
+                index = indexes[0]
+                p_id = self.ivn.item(index,0).text()
+                self.ivn.removeRow(index)
+                some.cmm.delete(p_id)
+            else:
+                print(False)
         else:
-            print(False)
+            pass
     def query_ivn(self, query=''):
         self.ivn.setRowCount(0);
         self.ivn_tuple = some.cmm.search(self.ivn_search.text())
@@ -110,7 +116,10 @@ class Ui_MainWindow(object):
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         deleteShortcut = QtGui.QShortcut(QtGui.QKeySequence('Esc'),self.centralwidget)
-        deleteShortcut.activated.connect(self.ret_login)
+        try:
+            deleteShortcut.activated.connect(self.ret_login)
+        except:
+            print("Unit test mode!")
         self.label_2 = QtGui.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(820, 264, 251, 31))
         font = QtGui.QFont()
@@ -177,7 +186,10 @@ class Ui_MainWindow(object):
         self.exit = QtGui.QPushButton(self.centralwidget)
         self.exit.setGeometry(QtCore.QRect(820, 220, 85, 27))
         self.exit.setObjectName(_fromUtf8("exit"))
-        self.exit.clicked.connect(self.ret_login)
+        try:
+            self.exit.clicked.connect(self.ret_login)
+        except:
+            pass
         self.layoutWidget = QtGui.QWidget(self.centralwidget)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 20, 791, 621))
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
@@ -265,26 +277,6 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Search and select customers", None))
         self.ivn_search.setPlaceholderText(_translate("MainWindow", "Enter customer\'s name here", None))
 
-class client_control_window(QtGui.QMainWindow, Ui_MainWindow):
-    closed = QtCore.pyqtSignal()
-    ret = QtCore.pyqtSignal()
-    def __init__(self, parent=None , user = ''):
-        super(client_control_window, self).__init__(parent)
-        USER = user
-        self.setupUi(self)
-    @QtCore.pyqtSlot()
-    def ret_login(self):
-        self.ret.emit()
-        self.close()
-    def show_decorator(self,user):
-        global some
-        some = ems_core('ems',user)
-        self.show()
-    @QtCore.pyqtSlot()
-    def dummy(self):
-        self.closed.emit()
-        self.close()
-
 
 if __name__ == "__main__":
     import sys
@@ -294,4 +286,23 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
+else:
+    class client_control_window(QtGui.QMainWindow, Ui_MainWindow):
+        closed = QtCore.pyqtSignal()
+        ret = QtCore.pyqtSignal()
+        def __init__(self, parent=None , user = ''):
+            super(client_control_window, self).__init__(parent)
+            USER = user
+            self.setupUi(self)
+        @QtCore.pyqtSlot()
+        def ret_login(self):
+            self.ret.emit()
+            self.close()
+        def show_decorator(self,user):
+            global some
+            some = ems_core('ems',user)
+            self.show()
+        @QtCore.pyqtSlot()
+        def dummy(self):
+            self.closed.emit()
+            self.close()

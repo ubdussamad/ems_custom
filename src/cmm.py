@@ -72,7 +72,7 @@ class cmm ( object ):
         def id_to_client (self , id):
             self.cursor.execute('SELECT (Client) FROM cmm where C_id = (?)',(id,))
             data = self.cursor.fetchall()
-            return(data[0])
+            return(data[0] if any(data) else ['Deleted User'])
         def c2id (self ,client):
             self.cursor.execute('SELECT (C_id) FROM cmm where Client LIKE (?)',(str(client)+'%',))
             data = self.cursor.fetchall()

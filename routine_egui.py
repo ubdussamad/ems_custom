@@ -37,6 +37,53 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+class Printer(QtGui.QDialog):
+    def __init__(self):
+        super(Printer, self).__init__()
+        self.setWindowTitle('Recipt Preview')
+        self.resize(1030, 629)
+        self.editor = QtGui.QTextEdit(self)
+        self.editor.textChanged.connect(self.handleTextChanged)
+        self.buttonPrint = QtGui.QPushButton('Print', self)
+        self.buttonPrint.clicked.connect(self.handlePrint)
+        self.buttonPreview = QtGui.QPushButton('Preview', self)
+        self.buttonPreview.clicked.connect(self.handlePreview)
+        layout = QtGui.QGridLayout(self)
+        layout.addWidget(self.editor, 0, 0, 1, 3)
+        self.handleOpen(os.path.abspath("recipt.html"))
+        layout.addWidget(self.buttonPrint, 1, 0)
+        layout.addWidget(self.buttonPreview, 1, 1)
+        self.handleTextChanged()
+
+    def handleOpen(self,path):
+        if path:
+            file = QtCore.QFile(path)
+            if file.open(QtCore.QIODevice.ReadOnly):
+                stream = QtCore.QTextStream(file)
+                text = stream.readAll()
+                info = QtCore.QFileInfo(path)
+                if info.completeSuffix() == 'html':
+                    self.editor.setHtml(text)
+                else:
+                    self.editor.setPlainText(text)
+                file.close()
+
+    def handlePrint(self):
+        dialog = QtGui.QPrintDialog()
+        if dialog.exec_() == QtGui.QDialog.Accepted:
+            self.editor.document().print_(dialog.printer())
+
+    def handlePreview(self):
+        dialog = QtGui.QPrintPreviewDialog()
+        dialog.paintRequested.connect(self.editor.print_)
+        dialog.exec_()
+
+    def handleTextChanged(self):
+        enable = not self.editor.document().isEmpty()
+        self.buttonPrint.setEnabled(enable)
+        self.buttonPreview.setEnabled(enable)
+
+
 class Ui_EMS(object):
     def __get_ttype(self):
         self.__higher_priority = USER.lower() in ['nouman','desk1','desk2','desk3'] #The user has auth
@@ -78,12 +125,8 @@ class Ui_EMS(object):
 
     def print_recipt_routine(self):
         recipt = genrate_recipt(some.recipt,self.__get_ttype())
-        if LINUX:
-            self.statusbar.showMessage("Printing.... Please Wait (Posix)",4000)
-            os.system(recipt_data[2]%recipt)
-        else:
-            self.statusbar.showMessage("Printing.... Please Wait (Nt)",4000)
-            os.system(recipt_data[3]%recipt)
+        p = Printer()
+        p.exec_()
 
     def customer_change(self):
         # change self.c_name
@@ -150,6 +193,7 @@ class Ui_EMS(object):
         self.total_amt.setText('%.2f'%self.total_amount)
     def clear_cart_routine(self):
         self.print_recipt.setEnabled(False)
+        self.total_amt.setText('0.0')
         self.cart.setRowCount(0);
         some.cart = []
     def delete_selected_cart_item(self):
@@ -161,12 +205,13 @@ class Ui_EMS(object):
         self.update_cart_with_amount(self.__get_ttype())
     def query_ivn(self, query=''):
         self.ivn.setRowCount(0);
-        self.ivn_tuple = sorted(some.display_ivn(query))
+        key = self.ivn_search_key_select.currentText()
+        self.ivn_tuple = sorted(some.display_ivn(query,key[0]))
         self.ivn_length = len(self.ivn_tuple)
         self.ivn.setRowCount(self.ivn_length)
         for i in range(0,self.ivn_length):
             p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][1]))
+            qty = QtGui.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
@@ -183,7 +228,8 @@ class Ui_EMS(object):
         #print("Current User is: %s"%USER)
         # This function is called when something is to be added into the cart
         self.print_recipt.setEnabled(False)
-        if action or event.key() == QtCore.Qt.Key_Return: #This updates the cart
+        print(event.key())
+        if action or event.key() == QtCore.Qt.Key_Return or event.key() == 16777221: #This updates the cart
             self.update_cart_with_amount(self.__get_ttype()) #Calling it for updating the cart everytime with amount
             self.total_amount = 0
 
@@ -207,7 +253,7 @@ class Ui_EMS(object):
 
             for i in range(0,self.cart_length):
                 p_id = QtGui.QTableWidgetItem(str(self.cart_tuple[i][0]))
-                qty = QtGui.QTableWidgetItem(str(self.cart_tuple[i][1]))
+                qty = QtGui.QTableWidgetItem('%.2f'%float(self.cart_tuple[i][1]))
                 unit = QtGui.QTableWidgetItem(str(self.cart_tuple[i][2]))
                 rate = QtGui.QTableWidgetItem(str(self.cart_tuple[i][3]))
                 tmp = float(self.cart_tuple[i][1])*float(self.cart_tuple[i][3])
@@ -247,11 +293,25 @@ class Ui_EMS(object):
         self.verticalLayout_6.addWidget(self.label)
 
         deleteShortcut = QtGui.QShortcut(QtGui.QKeySequence('Esc'),self.centralwidget)
-        deleteShortcut.activated.connect(self.ret_login)
+        try:
+            deleteShortcut.activated.connect(self.ret_login)
+        except:
+            print("Unit-Testing Mode")
 
+        self.horizontalLayout6 = QtGui.QHBoxLayout()
+        self.horizontalLayout6.setObjectName(_fromUtf8("Search Horizontal Layout"))
+        
         self.ivn_sb = QtGui.QLineEdit(self.centralwidget)
         self.ivn_sb.setObjectName(_fromUtf8("ivn_sb"))
-        self.verticalLayout_6.addWidget(self.ivn_sb)
+        self.ivn_search_key_select = QtGui.QComboBox(self.centralwidget)
+        self.ivn_search_key_select.addItem('Product Name')
+        self.ivn_search_key_select.addItem('HSN/SAC')
+        self.horizontalLayout6.addWidget(self.ivn_sb)
+        self.horizontalLayout6.addWidget(self.ivn_search_key_select)
+
+        self.verticalLayout_6.addLayout(self.horizontalLayout6)
+
+
         self.ivn_sb.textChanged.connect(lambda x:self.query_ivn(self.ivn_sb.text()))
 
         self.ivn = QtGui.QTableWidget(self.centralwidget)
@@ -281,7 +341,7 @@ class Ui_EMS(object):
         self.ivn.setRowCount(self.ivn_length)
         for i in range(0,self.ivn_length):
             p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][1]))
+            qty = QtGui.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
             unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
             rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
             desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
@@ -462,7 +522,10 @@ class Ui_EMS(object):
         self.verticalLayout_2.addWidget(self.clr)
         self.exit = QtGui.QPushButton(self.centralwidget)
         self.exit.setObjectName(_fromUtf8("exit"))
-        self.exit.clicked.connect(self.ret_login)
+        try:
+            self.exit.clicked.connect(self.ret_login)
+        except:
+            pass
         self.verticalLayout_2.addWidget(self.exit)
         self.gridLayout_3.addLayout(self.verticalLayout_2, 1, 0, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_3, 0, 2, 1, 1)
@@ -507,32 +570,6 @@ class Ui_EMS(object):
         self.exit.setText(_translate("EMS", "Back", None))
         self.total_amount = 0
 
-class routine_window(QtGui.QMainWindow, Ui_EMS):
-    closed = QtCore.pyqtSignal()
-    ret = QtCore.pyqtSignal()
-    def ret_login(self):
-        self.ret.emit()
-        self.close()
-    def __init__(self, parent=None , user = ''):
-        super(routine_window, self).__init__(parent)
-        USER = user
-        self.setupUi(self)
-
-    @QtCore.pyqtSlot()
-    def dummy(self):
-        self.closed.emit()
-        self.close()
-    def show_decorator(self,user):
-        global some
-        global USER
-        USER = user
-        self.user_label.setText(_translate("EMS", user.capitalize(), None))
-        some = ems_core('ems',user)
-        self.comboBox.clear()
-        for text in some.display_all_customers():
-            self.comboBox.addItem(text[0])
-        self.query_ivn()
-        self.show()
 
 if __name__ == "__main__":
     import sys
@@ -542,3 +579,31 @@ if __name__ == "__main__":
     ui.setupUi(EMS)
     EMS.show()
     sys.exit(app.exec_())
+else:
+    class routine_window(QtGui.QMainWindow, Ui_EMS):
+        closed = QtCore.pyqtSignal()
+        ret = QtCore.pyqtSignal()
+        def ret_login(self):
+            self.ret.emit()
+            self.close()
+        def __init__(self, parent=None , user = ''):
+            super(routine_window, self).__init__(parent)
+            USER = user
+            self.setupUi(self)
+
+        @QtCore.pyqtSlot()
+        def dummy(self):
+            self.closed.emit()
+            self.close()
+        def show_decorator(self,user):
+            global some
+            global USER
+            USER = user
+            self.user_label.setText(_translate("EMS", user.capitalize(), None))
+            some = ems_core('ems',user)
+            self.comboBox.clear()
+            for text in some.display_all_customers():
+                self.comboBox.addItem(text[0])
+            self.query_ivn()
+            self.show()
+

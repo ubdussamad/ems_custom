@@ -22,16 +22,6 @@ class Window(QtGui.QWidget):
         self.handleTextChanged()
 
     def handleOpen(self,path):
-        p = path
-        # print("that",QtCore.QString(path))
-        path = QtGui.QFileDialog.getOpenFileName(
-            self, 'Open file', '',
-            'HTML files (*.html);;Text files (*.txt)')
-        # print("this",path)
-        # #path = 'recipt.html'
-        print(p)
-        print(path)
-        assert(p==path)
         if path:
             file = QtCore.QFile(path)
             if file.open(QtCore.QIODevice.ReadOnly):

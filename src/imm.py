@@ -78,12 +78,20 @@ class imm ( object ):
         self.cursor.execute('DELETE FROM ivn WHERE P_id = (?)',(p_id,))
         self.server.commit()
 
-    def search ( self , product= ''):
+    def search ( self , product= '',key = 'P'):
         # Returns a subsetset of self.data contaning the keywords
         # Returns a list of lists containing only names whic matcvh it
         if not product:self.cursor.execute('SELECT * FROM ivn')
-        else:self.cursor.execute('SELECT * FROM ivn WHERE P_id LIKE (?)',
+        else:
+            if key=='P':
+                self.cursor.execute('SELECT * FROM ivn WHERE P_id LIKE (?)',
                                     (product+"%",))
+            elif key=='H':
+                self.cursor.execute('SELECT * FROM ivn WHERE \"HSN/SAC\" LIKE (?)',
+                                    (product+"%",))
+            else:
+                self.cursor.execute('SELECT * FROM ivn')
+
         data = self.cursor.fetchall()
         return(data)
 

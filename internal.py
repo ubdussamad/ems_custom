@@ -17,10 +17,92 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+
+class Printer(QtGui.QDialog):
+    def __init__(self):
+        super(Printer, self).__init__()
+        self.setWindowTitle('Recipt Preview')
+        self.resize(1030, 629)
+        self.editor = QtGui.QTextEdit(self)
+        self.editor.textChanged.connect(self.handleTextChanged)
+        self.buttonPrint = QtGui.QPushButton('Print', self)
+        self.buttonPrint.clicked.connect(self.handlePrint)
+        self.buttonPreview = QtGui.QPushButton('Preview', self)
+        self.buttonPreview.clicked.connect(self.handlePreview)
+        layout = QtGui.QGridLayout(self)
+        layout.addWidget(self.editor, 0, 0, 1, 3)
+        self.handleOpen(os.path.abspath("recipt_dup.html"))
+        layout.addWidget(self.buttonPrint, 1, 0)
+        layout.addWidget(self.buttonPreview, 1, 1)
+        self.handleTextChanged()
+
+    def handleOpen(self,path):
+        if path:
+            file = QtCore.QFile(path)
+            if file.open(QtCore.QIODevice.ReadOnly):
+                stream = QtCore.QTextStream(file)
+                text = stream.readAll()
+                info = QtCore.QFileInfo(path)
+                if info.completeSuffix() == 'html':
+                    self.editor.setHtml(text)
+                else:
+                    self.editor.setPlainText(text)
+                file.close()
+
+    def handlePrint(self):
+        dialog = QtGui.QPrintDialog()
+        if dialog.exec_() == QtGui.QDialog.Accepted:
+            self.editor.document().print_(dialog.printer())
+
+    def handlePreview(self):
+        dialog = QtGui.QPrintPreviewDialog()
+        dialog.paintRequested.connect(self.editor.print_)
+        dialog.exec_()
+
+    def handleTextChanged(self):
+        enable = not self.editor.document().isEmpty()
+        self.buttonPrint.setEnabled(enable)
+        self.buttonPreview.setEnabled(enable)
+
+class detail_diag(QtGui.QDialog):
+    def __init__(self,d, parent=None):
+        super(detail_diag, self).__init__(parent)
+        self.setWindowTitle(_translate("MainWindow", "Details for Tid: %s"%(d[0],), None))
+        #Format
+        #['1551352557.0', 'Thu Feb 28 16:45:57 2019', 'Random', '544.5799999999999', 'GREEN_NORMAL|10.000|25.000|13.000|,RED_NORMAL|9.750|24.000|12.000|']
+        with open('resources/recipt_popup_format2.html') as f:
+            o = f.read()
+        header_text = o%(d[0],d[2],d[1],d[3])#,d[-1])
+        k = [[j for j in i.split('|') if all(j)][:3] for i in d[-1].split(',') if all(i)]
+        l = '<tr><td>'+'</td></tr><tr><td>'.join([ '</td><td>'.join(i) for i in k])+'</td></tr>'
+        self.textBrowser = QtGui.QTextBrowser(self)
+        self.row_data = header_text+l+'</table></body></html>'
+        self.textBrowser.setHtml(self.row_data)
+        self.verticalLayout = QtGui.QVBoxLayout(self)
+        self.verticalLayout.addWidget(self.textBrowser)
+        self.print_button = QtGui.QPushButton(self)
+        self.print_button.setText("Print Recipt")
+        self.verticalLayout.addWidget(self.print_button)
+        self.print_button.clicked.connect(self.print_duplicate_recipt)
+    def print_duplicate_recipt(self):
+        with open('recipt_dup.html','w',encoding='utf-8') as fobj:
+            fobj.write(self.row_data)
+        p = Printer()
+        p.exec_()
+
+
 class Ui_MainWindow(object):
     def __init__ ( self ):
         self.__auth = 1
         self.__data = []
+
+
+    def pullup(self):
+        row = []
+        for i in self.history.selectionModel().selectedIndexes():
+            row.append(self.history.item(i.row(), i.column()).text())
+        z = detail_diag(row)
+        z.exec_()
     def __access(self):
         key = self.key.text()
         self.__key_hash = '04a11c0ac3d39a7d59c2ee0cdcdcabb4' #emscustom
@@ -157,6 +239,11 @@ class Ui_MainWindow(object):
         self.history.setObjectName(_fromUtf8("history"))
         self.history.setColumnCount(0)
         self.history.setRowCount(0)
+        self.history.setSortingEnabled(True)
+        self.history.horizontalHeader().setSortIndicatorShown(True)
+        self.history.horizontalHeader().setStretchLastSection(True)
+        self.history.verticalHeader().setSortIndicatorShown(True)
+        self.history.doubleClicked.connect(self.pullup)
         self.gridLayout.addWidget(self.history, 1, 0, 1, 2)
         self.verticalLayout_2.addLayout(self.gridLayout)
         self.verticalLayout = QtGui.QVBoxLayout()

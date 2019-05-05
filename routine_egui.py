@@ -11,19 +11,13 @@ from PyQt4 import QtCore, QtGui
 from ems_core import *
 from recipt_genrator import *
 some = ems_core('ems','admin')
-from sys import platform
+#from sys import platform
 USER = 'admin'
 import os
 
-with open('resources/recipt.config') as file:
-    recipt_data = file.read()
-    recipt_data = recipt_data.strip('\n').split('|')
 
 GRAND_TOTAL_AMOUNT_FOR_SESSION = 0
 LAST_SALE_AMOUNT = 0
-LINUX = False
-if platform == 'linux':
-    LINUX = True
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:

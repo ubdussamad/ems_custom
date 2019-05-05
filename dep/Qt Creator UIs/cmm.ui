@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1080</width>
+    <height>681</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>EMS | Client Management Control</string>
+  </property>
+  <property name="inputMethodHints">
+   <set>Qt::ImhDigitsOnly</set>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>264</y>
+      <width>251</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>22</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Customer Details</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>304</y>
+      <width>68</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Name</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>334</y>
+      <width>68</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Due</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>364</y>
+      <width>141</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Total Transactions</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>414</y>
+      <width>251</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Ubuntu</family>
+      <pointsize>15</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:rgb(0,10, 0);</string>
+    </property>
+    <property name="text">
+     <string>Clear Due for this Customer:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="c_name">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>304</y>
+      <width>68</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Random</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="c_due">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>334</y>
+      <width>68</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="c_total">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>364</y>
+      <width>68</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>444</y>
+      <width>161</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enter amount paid:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="due_clr_amt">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>464</y>
+      <width>181</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="inputMethodHints">
+     <set>Qt::ImhDigitsOnly</set>
+    </property>
+    <property name="placeholderText">
+     <string>Enter numbers..</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="clr_due">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>494</y>
+      <width>101</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>520</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>Clear Due</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="update_cl">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>154</y>
+      <width>97</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Update List</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="del_cl">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>187</y>
+      <width>145</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Remove Customer</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add_cl">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>121</y>
+      <width>117</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Add Customer</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="exit">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>220</y>
+      <width>85</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Exit</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>791</width>
+      <height>621</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <italic>true</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Search and select customers</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="ivn_search">
+       <property name="placeholderText">
+        <string>Enter customer's name here</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTableWidget" name="ivn"/>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1080</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -27,7 +27,11 @@ Incase of any glitch in amount,tax,etcetera, contact the seller.</p>
     
     def render(self):
         #heads = ['data'] if not self.ttype else ['data',] 
-        prefix = '<h3 align=\'center\'>Nouman Colors</h3>'
+        prefix = '''<h3 align=\'center\'>Nordex Dyestuff</h3>
+        <p>Colours, Threads & Chemicals <br/>
+        nordex.help@gmail.com |  <b>+91 8707497350</b><br/>
+        <b>GSTIN</b>-09BRPPN2I23QIZ4 <br/>
+        299/2B Akbari Gate Chowk Lane, Lucknow</p><hr/>'''
         meta_headers = ''.join([''.join(['<h8><b>',keys,'</b></h8>:  ',str(values),
             '<br/>']) for keys,values in self.data.items() if keys != 'data'])
         infix = '<br/><hr/><table align=\'center\'><tr><th>'

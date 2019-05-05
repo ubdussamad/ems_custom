@@ -25,7 +25,7 @@ class lmm ( object ):
                 self.server.commit()
                 
         def append_log ( self, data ):
-                self.cursor.execute("INSERT INTO hmm (T_id, Time, C_id, Net_Amt, Products, Bb) VALUES (?,?,?,?,?,?)",(*data,))
+                self.cursor.execute("INSERT INTO hmm (T_id, Time, C_id, Net_Amt, Products, Bb , pt) VALUES (?,?,?,?,?,?,?)",(*data,))
                 self.server.commit()
 
         def most_bought(self):

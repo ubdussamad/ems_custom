@@ -134,6 +134,7 @@ class ems_core ( object):
                 self.lmm.cursor.execute("INSERT INTO stats (`Year`,`Month`,`Date`,`Expense`,`Profit Salewise`,`Tax`,`key`) VALUES (?,?,?,?,?,?,?)",
                                         (year,month,date,'0.0','0.0','0.0',str(profit_for_sale)))
             self.lmm.server.commit()
+        return('%.3f,%.3f'%(profit_for_sale,tax))
 
 
     def check_out ( self , payment_type , ttype = 0): #ttype = pk (0) / ka (1)
@@ -162,13 +163,13 @@ class ems_core ( object):
         transaction_id = int(time.time())
         date = str(time.ctime())
         if not ttype:  # Logging the transaction in the log
-            self.calc_profit(self.cart,ttype)
+            pt = self.calc_profit(self.cart,ttype)
             self.lmm.append_log([transaction_id,date,self.c_id,#P_id,qty,rate,tax , Billed BY
-                             self.total_amount,','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart]),self.agent])
+                             self.total_amount,','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart]),self.agent,pt])
 
         else:
-            self.calc_profit(self.cart,ttype)
-            self.__log_untaxed([ transaction_id, self.c_id, date , self.total_amount , ','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart]) ])
+            pt = self.calc_profit(self.cart,ttype)
+            self.__log_untaxed([ transaction_id, self.c_id, date , self.total_amount , ','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart]),pt])
 
         self.recipt = self.genrate_recipt(transaction_id,date,payment_type,
                             self.total_amount , ttype)

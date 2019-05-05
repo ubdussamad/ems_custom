@@ -84,9 +84,24 @@ class Ui_EMS(object):
         self.__internal_sale = self.radioButton.isChecked() # The user wishes to proceed to internal sale
         return(self.__higher_priority and self.__internal_sale)
 
+    def sanity_check(self):
+        allRows = self.cart.rowCount()
+        print("Checking Sanity!!")
+        for row in range(0,allRows):
+            print(self.cart.item(row,1).text())
+            float(self.cart.item(row,3).text())
+
     def dummy(self):
         print("Iam a dummy!")
     def normal_checkout(self):
+        try:
+            self.sanity_check()
+        except Exception as err:
+            self.statusbar.showMessage("Invalid Values, Check Values in Cart!",2000)
+            print(err)
+            # This happens when user tries to enter invalid (non-numeric) rate or qty
+            # values in Cart
+            return
         global GRAND_TOTAL_AMOUNT_FOR_SESSION
         global LAST_SALE_AMOUNT
         if self.__get_ttype():
@@ -102,6 +117,13 @@ class Ui_EMS(object):
             self.statusbar.showMessage("Empty Cart, Please Fill Cart.",2000)
         self.query_ivn(self.ivn_sb.text())
     def borrow_checkout(self):
+        try:
+            self.sanity_check()
+        except:
+            self.statusbar.showMessage("Invalid Values, Check Values in Cart!",2000)
+            # This happens when user tries to enter invalid (non-numeric) rate or qty
+            # values in Cart
+            return
         if self.__get_ttype():
             return
         global GRAND_TOTAL_AMOUNT_FOR_SESSION
@@ -134,14 +156,22 @@ class Ui_EMS(object):
         self.total_amt.setText('0.0')
         self.print_recipt.setEnabled(False)
         return
-    def update_cart_with_amount( self, ttype = 0):  #Triggered by update button
+    def update_cart_with_amount( self, ttype = 0,warnings=False):  #Triggered by update button
         self.print_recipt.setEnabled(False)
+        try:
+            if not warnings:
+                self.sanity_check()
+            else:
+                pass
+        except:
+            self.statusbar.showMessage("Invalid Cart Data!!",1000)
+            self.total_amt.setText('0.0')
         if self.__get_ttype():
             self.due_self.setEnabled(False)
         else:
             self.due_self.setEnabled(True)
         if not any(some.cart):
-            self.statusbar.showMessage('Empty cart, 0x1')
+            self.statusbar.showMessage('Empty or Invalid Cart data, Please Check Cart Data 0x1',2000)
             return
         rc,cc= self.cart.rowCount() , self.cart.columnCount()
         for i,j in zip(range(rc),range(cc)):
@@ -224,7 +254,7 @@ class Ui_EMS(object):
         self.print_recipt.setEnabled(False)
         print(event.key())
         if action or event.key() == QtCore.Qt.Key_Return or event.key() == 16777221: #This updates the cart
-            self.update_cart_with_amount(self.__get_ttype()) #Calling it for updating the cart everytime with amount
+            self.update_cart_with_amount(self.__get_ttype(),warnings=True) #Calling it for updating the cart everytime with amount
             self.total_amount = 0
 
             indexes = [i.row() for i in self.ivn.selectionModel().selectedRows()]

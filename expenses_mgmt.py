@@ -305,7 +305,6 @@ class Ui_MainWindow(object):
         except:
             self.statusbar.showMessage("Please Enter Vaild Data!!" , 2000)
             return
-        self.red_exp.setChecked(False)
         self.core.cmm.cursor.execute("insert into expenses (Model_Name, Time, Amount, Reason) values (?,?,?,?)",
             (self.add_for.currentText(),time.ctime(),value,self.description.text()) )
         self.core.cmm.server.commit()
@@ -324,6 +323,7 @@ class Ui_MainWindow(object):
         self.update()
         self.amount_add.clear()
         self.description.clear()
+        self.red_exp.setChecked(False)
         return
 
     def name_search_routine(self):

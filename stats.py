@@ -279,7 +279,7 @@ class Ui_MainWindow(object):
         # Back button
         self.back = QtGui.QPushButton(self.centralwidget)
         self.back.setObjectName(_fromUtf8("back"))
-        self.back.clicked.connect(exit)
+        #self.back.clicked.connect(exit)
         self.gridLayout.addWidget(self.back, 3, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.horizontalLayout_6.addLayout(self.verticalLayout)

@@ -22,6 +22,10 @@ class imm ( object ):
         # Here i am strictly assuming that the p_id wouldn't be negative.
         if u_type == 'chk_out':
             # Decreasing the Quatity of stock of the specific product_id
+            self.cursor.execute('SELECT Quantity FROM ivn WHERE P_id LIKE (?)',(p_id,))
+            qty = self.cursor.fetchall()[0][0]
+            if qty < float(data[0]):
+                data[0] = qty
             self.cursor.execute('UPDATE ivn SET Quantity = Quantity - (?) WHERE P_id = (?)', (data[0] ,p_id))
             self.server.commit()
 

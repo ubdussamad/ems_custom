@@ -206,7 +206,7 @@ class Ui_MainWindow(object):
         self.rate.setPlaceholderText(_translate("MainWindow", rate, None))
         self.brate.setPlaceholderText(_translate("MainWindow", brate, None))
         self.tax.setPlaceholderText(_translate("MainWindow", tax, None))
-        self.label_7.setText(_translate("MainWindow", "Edit:    %s"% (p_id), None))
+        self.label_7.setText(_translate("MainWindow", "Edit:    %s || Taxed Rate %.3f"% (p_id,(1+(float(tax)/100))*float(rate)), None))
         self.label_7.setStyleSheet(_fromUtf8("font-weight: bold;"))
         self.label_7.setAlignment(QtCore.Qt.AlignCenter)
     def setupUi(self, MainWindow):

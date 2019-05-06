@@ -77,6 +77,7 @@ class ems_core ( object):
 
     def display_all_customers(self):
         return self.cmm.list_c_names()
+
     def calc_profit(self,data,ttype = 0):
         print("Profit routine called!")
         def floatify(x):
@@ -92,16 +93,23 @@ class ems_core ( object):
             #print("\nPid is: %s \n Modrate: %s and Qty: %s"%(p_id,modrate,str(i[1]))
             modrate = { float(i.split(':')[0]):float(i.split(':')[1]) for i in modrate if i}
             sp += i[1]*i[3] # Selling price
+            # Here i[1] is the qty in cart
             tax += (i[4]/100)*i[1]*i[3] # tax amount
+            last_mod_rate = 0
             for j in modrate:
-                if modrate[j] >= i[1]: #Stock > demand
+                if modrate[j] >= i[1]: # PArtial Stock > demand
                     cp += j * i[1] # Cost price
                     modrate[j] -= i[1]
                     break
                 else:
+                    last_mod_rate = j
                     cp += modrate[j] * j
                     i[1] -= modrate[j]
                     modrate[j] = 0
+            if i[1] > 0.0:
+                print("Forced Sale extra amount: %.2f\nCp till now: %.2f"%(i[1],cp))
+                cp += last_mod_rate*i[1]
+
             modrate = ["%.3f:%.3f"%(i,modrate[i]) for i in modrate if modrate[i]]
             modrate = ','.join(modrate)
             self.imm.update(p_id,'mod_rate',[modrate])

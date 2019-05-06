@@ -222,7 +222,8 @@ class Ui_MainWindow(object):
         self.name_table.setRowCount(len(self.models_data))
         self.name_table.setColumnCount(len(self.models_data[0]))
         self.name_table.setHorizontalHeaderLabels(['Model_Name'])
-        self.name_table.itemClicked.connect(self.update_details)
+        self.name_table.itemSelectionChanged.connect(self.update_details)
+        self.name_table.itemActivated.connect(self.foo)
         for i in range(0,len(self.models_data)):
             data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.models_data[i] ]
             for j,k in enumerate(data_widgets):
@@ -245,6 +246,8 @@ class Ui_MainWindow(object):
         self.core.cmm.cursor.execute("insert into expensemodels (Name) values (?)",(self.add_new.text(),))
         self.core.cmm.server.commit()
         self.update()
+    def foo(self):
+        print("Yayyyyyy!")
 
     def search_routine(self):
         self.search.text()
@@ -253,6 +256,7 @@ class Ui_MainWindow(object):
         self.log_data = self.core.cmm.cursor.fetchall()
         if not self.log_data:
             self.statusbar.showMessage("No Results",1000)
+        self.log.setRowCount(0)
         self.log.setRowCount(len(self.log_data))
         self.log.setColumnCount(len(self.log_data[0]))
         self.log_headers = ['Model_Name' , 'Time' , 'Amount' ,'Reason']
@@ -274,6 +278,7 @@ class Ui_MainWindow(object):
         # Model Names
         self.core.cmm.cursor.execute('select * from expensemodels')
         self.models_data = self.core.cmm.cursor.fetchall()
+        self.name_table.setRowCount(0)
         self.name_table.setRowCount(len(self.models_data))
         for i in range(0,len(self.models_data)):
             data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.models_data[i] ]
@@ -300,6 +305,7 @@ class Ui_MainWindow(object):
         except:
             self.statusbar.showMessage("Please Enter Vaild Data!!" , 2000)
             return
+        self.red_exp.setChecked(False)
         self.core.cmm.cursor.execute("insert into expenses (Model_Name, Time, Amount, Reason) values (?,?,?,?)",
             (self.add_for.currentText(),time.ctime(),value,self.description.text()) )
         self.core.cmm.server.commit()
@@ -324,6 +330,7 @@ class Ui_MainWindow(object):
         name = self.name_search.text()
         self.core.cmm.cursor.execute('select * from expensemodels where Name like (?)',(name+'%',))
         self.models_data = self.core.cmm.cursor.fetchall()
+        self.name_table.setRowCount(0)
         self.name_table.setRowCount(len(self.models_data))
         for i in range(0,len(self.models_data)):
             data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.models_data[i] ]

@@ -108,7 +108,7 @@ class Ui_EMS(object):
             print("Internal Sale")
         LAST_SALE_AMOUNT = float(self.total_amt.text())
         GRAND_TOTAL_AMOUNT_FOR_SESSION += float(self.total_amt.text())
-        self.garbage.setText(str(GRAND_TOTAL_AMOUNT_FOR_SESSION)+' / '+ str(LAST_SALE_AMOUNT))
+        self.garbage.setText('%.2f'%GRAND_TOTAL_AMOUNT_FOR_SESSION+' / '+ str(LAST_SALE_AMOUNT))
         ret = some.check_out("current" , self.__get_ttype())
         self.clear_cart_routine()
         if ret != -1:
@@ -181,9 +181,14 @@ class Ui_EMS(object):
             ivn_qty  = ivn_qty[0][1]
             amt = self.cart.item(i,1).text()
             if float(ivn_qty) < float(amt):
-                # Raise Alarms
-                amt = ivn_qty
-                self.statusbar.showMessage("Amount of %s exceeded the qty! Reducing Qty."%p_id,4000)
+                reply = QtGui.QMessageBox.question(self.centralwidget, "Inventory Contradiction", 
+                 "Only %.2fKgs of %s is left in the inventory, Continue ?"%(float(ivn_qty),p_id), QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+                if reply == QtGui.QMessageBox.Yes:
+                    pass
+                else:
+                    amt = ivn_qty
+                    self.statusbar.showMessage("Amount of %s exceeded the qty! Reducing Qty."%p_id,4000)
+
             rate = self.cart.item(i,3).text()
             # Updating internal cart tuple with the modified data
             some.cart[i][1] = amt
@@ -300,6 +305,18 @@ class Ui_EMS(object):
             print("R is pressed!")
         else:
             print("Something else is pressed!")
+
+    def bought_rate(self):
+        indexes = [i.row() for i in self.cart.selectionModel().selectedRows()]
+        index = indexes[0]
+        table = some.display_ivn()
+        for i in table:
+            if i[0]== self.cart.item(index,0).text():
+                self.statusbar.showMessage("%s : Bought Rate: %d Rs/Kgs , Taxed Rate: %.2f Rs/Kgs"%\
+                    (i[0],i[7],i[3]*(1+(i[5]/100))),3000)
+                break
+        #\
+        #    (self.cart.item(index,0).text(),table[table.index(self.cart.item(index,0).text())][7]))
     def setupUi(self, EMS):
         EMS.setObjectName(_fromUtf8("EMS"))
         EMS.resize(1030, 629)
@@ -459,6 +476,7 @@ class Ui_EMS(object):
         self.cart.setGridStyle(QtCore.Qt.NoPen)
         self.cart.itemClicked.connect(lambda x: self.update_cart_with_amount(self.__get_ttype()))
         self.cart.resizeColumnsToContents()
+        self.cart.itemSelectionChanged.connect(self.bought_rate)
         #self.cart.keyPressEvent = self.append_to_cart
 
 

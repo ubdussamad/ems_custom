@@ -15,11 +15,11 @@ class Render_html:
 body {text-align:center;font-family: "Fake Receipt", sans-serif }
 td,th {padding-right:10px;word-wrap: break-word;max-width: 150px;}
 </style>
-</head><body>'''
+</head><body align=\'center\'>'''
         postfix_string = '''
 <br/><br/>
 <b>GRAND TOTAL: </b>%s Rupees
-<p style=\'font-size:10px;\'><b>Note:</b> The grand total amt is inclusive of all taxes.</br>
+<p align=\'center\' style=\'font-size:10px;\'><b>Note:</b> The grand total amt is inclusive of all taxes.</br>
 Incase of any glitch in amount,tax,etcetera, contact the seller.</p>
 </body></html>'''%self.data['Total Amount']
         return ( ''.join([prefix_string,text,postfix_string]) )
@@ -28,7 +28,7 @@ Incase of any glitch in amount,tax,etcetera, contact the seller.</p>
     def render(self):
         #heads = ['data'] if not self.ttype else ['data',] 
         prefix = '''<h3 align=\'center\'>Nordex Dyestuff</h3>
-        <p>Colours, Threads & Chemicals <br/>
+        <p align=\'center\'>Colours, Threads & Chemicals <br/>
         nordex.help@gmail.com |  <b>+91 8707497350</b><br/>
         <b>GSTIN</b>-09BRPPN2I23QIZ4 <br/>
         299/2B Akbari Gate Chowk Lane, Lucknow</p><hr/>'''

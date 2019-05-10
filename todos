@@ -1,0 +1,13 @@
+#TODO Logs
+
+* Check for Internal history Searching Bug *
+* Check for expense Amangemnet Bug
+* Add the Return Utilities
+
+#Future Possibilities
+
+* Loading complete history log as we do now,
+  would be stupid as it could have lakhs of enteries
+  and Qtable widget would take days to load all of it
+  so, the history management should have a log
+  display limit.

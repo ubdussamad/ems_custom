@@ -103,6 +103,7 @@ class Ui_MainWindow(object):
             row.append(self.history.item(i.row(), i.column()).text())
         z = detail_diag(row)
         z.exec_()
+
     def __access(self):
         key = self.key.text()
         self.__key_hash = '04a11c0ac3d39a7d59c2ee0cdcdcabb4' #emscustom
@@ -161,14 +162,23 @@ class Ui_MainWindow(object):
         self.total.setText('%.2f'%total)
         return
     def update_history(self,key = '' ,kt = 0):
-        # kt = 2 (for date) , 1 (for customer)
+        # kt = 0 (for t_id) , 1 (for customer)
         # Trim the history list here
+
+        def floatify(x):
+            try:
+                return(str(float(x)))
+            except:
+                return(x)
+
         if self.__auth:
             return
         self.history_tuple = sorted(self.__data,key=lambda x:x[0])
+
         if key:
             if kt==1:
                 key = some.cmm.c2id(key.lower())
+                
                 try:
                     key=key[0][0]
                 except:
@@ -176,28 +186,25 @@ class Ui_MainWindow(object):
                     return
             tmp = []
             for i in self.history_tuple:
-                #print('Comparing %s   with %s'%(str(key).lower() ,i[kt].lower() ))
-                if str(key).lower() in i[kt].lower():
-                    #print("hit")
+                if floatify(i[kt]).lower().startswith(str(key).lower()):
                     tmp.append(i)
             self.history_tuple = tmp
 
-        #print("Length of history tuple is: %d"%len(self.history_tuple))
-        # Updating the Table
+
+        self.history.setColumnCount(0)
+        self.history.setRowCount(0)
         self.history.setColumnCount(5)
-        self.table_headers = ['Transac Id','Customer Id','Time','Amount','Products']
-        self.history.setHorizontalHeaderLabels(self.table_headers)
         self.history_length = len(self.history_tuple)
         self.history.setRowCount(self.history_length)
+        self.table_headers = ['Transac Id','Customer Id','Time','Amount','Products']
+        self.history.setHorizontalHeaderLabels(self.table_headers)
 
         self.history.setAlternatingRowColors(True)
         self.history.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.history.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.history.setTextElideMode(QtCore.Qt.ElideRight)
         self.history.setGridStyle(QtCore.Qt.NoPen)
-        #self.history.itemClicked.connect(self.append_to_cart)
         self.history.resizeColumnsToContents()
-        ##print(self.history_tuple)
 
         for i in range(0,self.history_length):
             try:
@@ -226,7 +233,7 @@ class Ui_MainWindow(object):
         #Search by date
         self.date = QtGui.QLineEdit(self.centralwidget)
         self.date.setObjectName(_fromUtf8("date"))
-        self.date.textChanged.connect(lambda x:self.update_history(self.date.text(),2))
+        self.date.textChanged.connect(lambda x:self.update_history(self.date.text(),0))
         self.gridLayout.addWidget(self.date, 0, 0, 1, 1)
 
         #Search by customer name

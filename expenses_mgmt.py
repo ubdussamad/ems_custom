@@ -72,9 +72,10 @@ class Ui_MainWindow(object):
         self.log.setObjectName(_fromUtf8("log"))
         self.log.setColumnCount(0)
         self.log.setRowCount(0)
-        self.log.horizontalHeader().setSortIndicatorShown(True)
-        self.log.horizontalHeader().setStretchLastSection(True)
-        self.log.verticalHeader().setSortIndicatorShown(True)
+        # self.log.setSortingEnabled(True)
+        # self.log.horizontalHeader().setSortIndicatorShown(True)
+        # self.log.horizontalHeader().setStretchLastSection(True)
+        # self.log.verticalHeader().setSortIndicatorShown(True)
         self.verticalLayout_2.addWidget(self.log)
         self.update_all = QtGui.QPushButton(self.layoutWidget)
         self.update_all.setObjectName(_fromUtf8("update_all"))
@@ -115,9 +116,9 @@ class Ui_MainWindow(object):
         self.name_table.setObjectName(_fromUtf8("name_table"))
         self.name_table.setColumnCount(0)
         self.name_table.setRowCount(0)
-        self.name_table.horizontalHeader().setCascadingSectionResizes(False)
-        self.name_table.horizontalHeader().setStretchLastSection(True)
-        self.name_table.verticalHeader().setSortIndicatorShown(True)
+        # self.name_table.horizontalHeader().setCascadingSectionResizes(False)
+        # self.name_table.horizontalHeader().setStretchLastSection(True)
+        # self.name_table.verticalHeader().setSortIndicatorShown(True)
         self.verticalLayout.addWidget(self.name_table)
         self.gridLayout_3.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -190,7 +191,7 @@ class Ui_MainWindow(object):
 
         # Main table things
         self.core.cmm.cursor.execute('select * from expenses')
-        self.log_data = self.core.cmm.cursor.fetchall()
+        self.log_data = self.core.cmm.cursor.fetchall()[::-1]
         if any(self.log_data):
             self.log.setRowCount(len(self.log_data))
             self.log.setColumnCount(len(self.log_data[0]))
@@ -253,10 +254,11 @@ class Ui_MainWindow(object):
         self.search.text()
         query = "select * from expenses where %s like \'%s\'"%(self.qtype.currentText(),self.search.text()+'%')
         self.core.cmm.cursor.execute(query)
-        self.log_data = self.core.cmm.cursor.fetchall()
+        self.log_data = self.core.cmm.cursor.fetchall()[::-1]
         if not self.log_data:
             self.statusbar.showMessage("No Results",1000)
         self.log.setRowCount(0)
+        self.log.setColumnCount(0)
         self.log.setRowCount(len(self.log_data))
         self.log.setColumnCount(len(self.log_data[0]))
         self.log_headers = ['Model_Name' , 'Time' , 'Amount' ,'Reason']
@@ -265,6 +267,7 @@ class Ui_MainWindow(object):
             data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.log_data[i] ]
             for j,k in enumerate(data_widgets):
                 self.log.setItem(i,j,k)
+
 
     def update(self):
         # Placeholders and labels
@@ -279,7 +282,10 @@ class Ui_MainWindow(object):
         self.core.cmm.cursor.execute('select * from expensemodels')
         self.models_data = self.core.cmm.cursor.fetchall()
         self.name_table.setRowCount(0)
+        self.name_table.setColumnCount(0)
         self.name_table.setRowCount(len(self.models_data))
+        self.name_table.setColumnCount(len(self.models_data[0]))
+        self.name_table.setHorizontalHeaderLabels(['Model_Name'])
         for i in range(0,len(self.models_data)):
             data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.models_data[i] ]
             for j,k in enumerate(data_widgets):

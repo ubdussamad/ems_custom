@@ -87,7 +87,7 @@ class ems_core ( object):
         cp,sp,tax = 0,0,0
         for i in data: #Data is cart and i is items in the Cart
             p_id = i[0]  #modrate looks like: 25:30,27:60
-            # i loks like [p_id , qty  , unit, rate , tax]
+            # i looks like [p_id , qty  , unit, rate , tax]
             i = list(map(floatify,i))
             modrate = self.imm.get_mod_rate(p_id)
             #print("\nPid is: %s \n Modrate: %s and Qty: %s"%(p_id,modrate,str(i[1]))
@@ -173,11 +173,13 @@ class ems_core ( object):
         if not ttype:  # Logging the transaction in the log
             pt = self.calc_profit(self.cart,ttype)
             self.lmm.append_log([transaction_id,date,self.c_id,#P_id,qty,rate,tax , Billed BY
-                             self.total_amount,','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart]),self.agent,pt])
+                             self.total_amount,','.join([i[0]+'|%.3f|%.3f|%.3f|'\
+                                %tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart]),self.agent,pt])
 
         else:
             pt = self.calc_profit(self.cart,ttype)
-            self.__log_untaxed([ transaction_id, self.c_id, date , self.total_amount , ','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart]),pt])
+            self.__log_untaxed([ transaction_id, self.c_id, date , self.total_amount ,
+                ','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4]))) for i in self.cart]),pt])
 
         self.recipt = self.genrate_recipt(transaction_id,date,payment_type,
                             self.total_amount , ttype)

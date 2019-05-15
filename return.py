@@ -85,7 +85,115 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.splitter)
 
         self.retranslateUi(Dialog)
+        self.integrate_functinality()
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def __write_internal(self,data):
+        path = 'resources/config_integrity.config'
+        self.__key = 'emscustom'
+        # Data is of format: time_stamp as t_id , c_id , time , amount , products
+        with open(path, 'a' if os.path.isfile(path) else 'w' ) as file_pointer:
+            data = '&sep'.join(map(str,data))
+            data = self.__encode(self.__key , data)
+            file_pointer.write(data+'\n')
+            file_pointer.flush()
+            file_pointer.close()
+
+
+    def integrate_functinality(self,user = 'admin'):
+        from ems_core import ems_core
+        self.lib = ems_core('ems',user)
+        self.current = None
+        self.__auth = 1
+        # Table Config
+        self.ttable.setAlternatingRowColors(True)
+        self.search()
+        self.tid.textChanged.connect(lambda: self.search(self.tid.text()))
+
+    def search(self,key= ''):
+        # TODO:
+        # 1. Get Search Target
+        self.data = self.__access()
+        if self.internal.isChecked() and self.data:
+            print("Intializing internal searching routine")
+            print("Internal len is" , len(self.data))
+
+        else:
+            # Incase it's not an internal search
+            self.data = self.lib.lmm.search(str(key))
+            print("External len is" , len(self.data))
+
+        self.ttable.setRowCount(0)
+        self.ttable.setColumnCount(0)
+        self.ttable.setColumnCount(6)
+        self.ttable.setRowCount(len(self.data))
+        self.table_headers = ['Transac Id','Time','Customer Id','Amount','Products','Sold By']
+        self.ttable.setHorizontalHeaderLabels(self.table_headers)
+        self.ttable.setAlternatingRowColors(True)
+        self.ttable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self.ttable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.ttable.itemSelectionChanged.connect(self.pull_up)
+
+        for i in range(0,len(self.data)):
+            self.data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.data[i] ]
+            for j,k in enumerate(self.data_widgets):
+                self.ttable.setItem(i,j,k)
+
+    def pull_up(self):
+        if not(self.internal.isChecked()) and not(self.__auth): # If the search is normal
+            index = [i.row() for i in self.ttable.selectionModel().selectedRows()][0]
+            self.current = [self.ttable.item(index,i).text() for  i in range(self.ttable.columnCount())]
+            self.lib.lmm.cursor.execute('select pt from hmm where T_id = (?)',(self.current[0],))
+            profit = self.lib.lmm.cursor.fetchall()
+            with open('resources/recipt_popup_format.html') as f:
+                o = f.read()
+            header_text = o%(self.current[0],self.current[1],self.current[2],self.current[3],self.current[-1])
+            k = [[j for j in i.split('|') if all(j)] for i in self.current[-2].split(',') if all(i)]
+            l = '<tr><td>'+'</td></tr><tr><td>'.join([ '</td><td>'.join(i) for i in k])+'</td></tr>'
+            self.row_data = header_text+l+'</table></body></html>'
+            self.scr.setHtml(self.row_data)
+        else:
+            print("Internal Search")
+            index = [i.row() for i in self.ttable.selectionModel().selectedRows()][0]
+            self.current = [self.ttable.item(index,i).text() for  i in range(self.ttable.columnCount()) if self.ttable.item(index,i)]
+            with open('resources/recipt_popup_format2.html') as f:
+                o = f.read()
+            header_text = o%(self.current[0],self.current[2],self.current[1],self.current[3])
+            k = [[j for j in i.split('|') if all(j)][:3] for i in self.current[4].split(',') if all(i)]
+            l = '<tr><td>'+'</td></tr><tr><td>'.join([ '</td><td>'.join(i) for i in k])+'</td></tr>'
+            self.row_data = header_text+l+'</table></body></html>'
+            self.scr.setHtml(self.row_data)
+
+    def __access ( self ):
+        import hashlib,base64
+        key = self.key.text()
+        self.__key_hash = '04a11c0ac3d39a7d59c2ee0cdcdcabb4' #emscustom
+        key_md5 = hashlib.md5(key.encode('utf-8')).hexdigest()
+        if key_md5 == self.__key_hash:
+            print("Access")
+            self.__auth = 0
+        else:
+            self.__auth = 1
+            return 0
+        self.__data = []
+        def decrypt(enc):
+            dec = []
+            enc = base64.urlsafe_b64decode(enc).decode()
+            for i in range(len(enc)):
+                key_c = key[i % len(key)]
+                dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+                dec.append(dec_c)
+            return "".join(dec)
+        with open('resources/config_integrity.config','r') as fp:
+            raw = fp.read()
+            fp.close()
+        for i in raw.split('\n'):
+            if len(i) > 2:
+                self.__data.append(decrypt(i).strip('\n').split('&sep'))
+        #print("INTR:",len(self.__data))
+        if self.__auth == 0:
+            return(self.__data)
+        return(None)
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "EMS | Return Facility", None))

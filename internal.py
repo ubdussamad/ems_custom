@@ -130,8 +130,6 @@ class Ui_MainWindow(object):
         for i in raw.split('\n'):
             if len(i) > 2:
                 self.__data.append(decrypt(i).strip('\n').split('&sep'))
-        #for i in self.__data:
-        #    #print(i)
         return
     def update_routine ( self ):
         # Check auth

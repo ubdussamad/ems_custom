@@ -180,13 +180,13 @@ class ems_core ( object):
             print(self.cart)
             self.lmm.append_log([transaction_id,date,self.c_id,#P_id,qty,rate,tax , Billed BY
                              self.total_amount,','.join([i[0]+'|%.3f|%.3f|%.3f|%.3f|'\
-                                %tuple(map(float,(i[1],i[3],i[4],self.meta_data[i[0]]))) for i in self.cart]),self.agent,pt])
+                                %tuple(map(float,(i[1],i[3],(float(i[4])/100)*float(i[1])*float(i[3]),self.meta_data[i[0]]))) for i in self.cart]),self.agent,pt])
 
         else:
             print(self.cart)
             pt = self.calc_profit(self.cart,ttype)
             self.__log_untaxed([ transaction_id, self.c_id, date , self.total_amount ,
-                ','.join([i[0]+'|%.3f|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],i[4],self.meta_data[i[0]]))) for i in self.cart]),pt])
+                ','.join([i[0]+'|%.3f|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],(float(i[4])/100)*float(i[1])*float(i[3]),self.meta_data[i[0]]))) for i in self.cart]),pt])
 
         self.recipt = self.genrate_recipt(transaction_id,date,payment_type,
                             self.total_amount , ttype)

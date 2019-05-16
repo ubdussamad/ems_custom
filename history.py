@@ -33,7 +33,7 @@ class detail_diag(QtGui.QDialog):
         with open('resources/recipt_popup_format.html') as f:
             o = f.read()
         header_text = o%(d[0],d[1],d[2],d[3],d[-1])
-        k = [[j for j in i.split('|') if all(j)][:-2] for i in d[-2].split(',') if all(i)]
+        k = [[j for j in i.split('|') if all(j)][:-1] for i in d[-2].split(',') if all(i)]
         l = '<tr><td>'+'</td></tr><tr><td>'.join([ '</td><td>'.join(i) for i in k])+'</td></tr>'
         self.textBrowser = QtGui.QTextBrowser(self)
         self.row_data = header_text+l+'</table></body></html>'

@@ -91,17 +91,15 @@ class ems_core ( object):
             # i looks like [p_id , qty  , unit, rate , tax]
             i = list(map(floatify,i))
             modrate = self.imm.get_mod_rate(p_id)
+            self.meta_data[p_id] = ','.join(modrate)
             #print("\nPid is: %s \n Modrate: %s and Qty: %s"%(p_id,modrate,str(i[1]))
             modrate = { float(i.split(':')[0]):float(i.split(':')[1]) for i in modrate if i}
-
-            self.meta_data[p_id] = sum([float(i) for i in modrate])/len(modrate)
-
             sp += i[1]*i[3] # Selling price
             # Here i[1] is the qty in cart
             tax += (i[4]/100)*i[1]*i[3] # tax amount
             last_mod_rate = 0
             for j in modrate:
-                if modrate[j] >= i[1]: # PArtial Stock > demand
+                if modrate[j] >= i[1]: # Partial Stock > demand
                     cp += j * i[1] # Cost price
                     modrate[j] -= i[1]
                     i[1] = 0
@@ -179,14 +177,14 @@ class ems_core ( object):
             pt = self.calc_profit(self.cart,ttype)
             print(self.cart)
             self.lmm.append_log([transaction_id,date,self.c_id,#P_id,qty,rate,tax , Billed BY
-                             self.total_amount,','.join([i[0]+'|%.3f|%.3f|%.3f|%.3f|'\
-                                %tuple(map(float,(i[1],i[3],(float(i[4])/100)*float(i[1])*float(i[3]),self.meta_data[i[0]]))) for i in self.cart]),self.agent,pt])
+                             self.total_amount,','.join([i[0]+'|%.3f|%.3f|%.3f|'\
+                                %tuple(map(float,(i[1],i[3],(float(i[4])/100)*float(i[1])*float(i[3]))))+self.meta_data[i[0]] for i in self.cart]),self.agent,pt])
 
         else:
             print(self.cart)
             pt = self.calc_profit(self.cart,ttype)
             self.__log_untaxed([ transaction_id, self.c_id, date , self.total_amount ,
-                ','.join([i[0]+'|%.3f|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],(float(i[4])/100)*float(i[1])*float(i[3]),self.meta_data[i[0]]))) for i in self.cart]),pt])
+                ','.join([i[0]+'|%.3f|%.3f|%.3f|'%tuple(map(float,(i[1],i[3],(float(i[4])/100)*float(i[1])*float(i[3]))))+self.meta_data[i[0]] for i in self.cart]),pt])
 
         self.recipt = self.genrate_recipt(transaction_id,date,payment_type,
                             self.total_amount , ttype)

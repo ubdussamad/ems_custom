@@ -105,10 +105,12 @@ class Ui_Dialog(object):
         self.lib = ems_core('ems',user)
         self.current = None
         self.__auth = 1
+        self.intr = 0
         # Table Config
         self.ttable.setAlternatingRowColors(True)
         self.search()
         self.tid.textChanged.connect(lambda: self.search(self.tid.text()))
+        self.return_button.clicked.connect(self.commit_return)
 
     def search(self,key= ''):
         # TODO:
@@ -140,11 +142,14 @@ class Ui_Dialog(object):
                 self.ttable.setItem(i,j,k)
 
     def pull_up(self):
-        if not(self.internal.isChecked()) and not(self.__auth): # If the search is normal
+        if not(self.internal.isChecked()) or self.__auth: # If the search is normal
+            self.label_2.setText("Details for the transaction")
+            self.intr = 0
             index = [i.row() for i in self.ttable.selectionModel().selectedRows()][0]
             self.current = [self.ttable.item(index,i).text() for  i in range(self.ttable.columnCount())]
             self.lib.lmm.cursor.execute('select pt from hmm where T_id = (?)',(self.current[0],))
-            profit = self.lib.lmm.cursor.fetchall()
+            self.pt = self.lib.lmm.cursor.fetchall()
+            self.current.append(self.pt[0][0])
             with open('resources/recipt_popup_format.html') as f:
                 o = f.read()
             header_text = o%(self.current[0],self.current[1],self.current[2],self.current[3],self.current[-1])
@@ -153,7 +158,8 @@ class Ui_Dialog(object):
             self.row_data = header_text+l+'</table></body></html>'
             self.scr.setHtml(self.row_data)
         else:
-            print("Internal Search")
+            self.intr = 1
+            self.label_2.setText("Details for the INTERNAL transaction")
             index = [i.row() for i in self.ttable.selectionModel().selectedRows()][0]
             self.current = [self.ttable.item(index,i).text() for  i in range(self.ttable.columnCount()) if self.ttable.item(index,i)]
             with open('resources/recipt_popup_format2.html') as f:
@@ -194,6 +200,47 @@ class Ui_Dialog(object):
         if self.__auth == 0:
             return(self.__data)
         return(None)
+
+    def commit_return(self):
+        '''
+        * Check if "Sure" checkbox is checked
+        * Determine what kind of transaction are we returning
+        * If it's a simple transaction
+            > Delete Record from HMM (Thus deleting Total Amount thingy automatically)
+            > Deduct Profit , Tax from Stats
+            > Append the inventory A/c to the list
+        * If it's a Internal Transaction
+            > Delete Record from Config Integrity
+            > Deduct Profit from Stats (Key Column)
+            > Append the inventory A/c to the list
+        '''
+        if not(self.assertain.isChecked()):
+            return
+
+        if self.intr: # Meaning It's an Internal Sale
+            print("Internal Sale Return\n",self.current)
+            # Do a bit more Stuff
+
+        else:  # Meaning it's Normal Sale
+            # Format for data
+            # ['1557981425.0', 'Thu May 16 10:07:05 2019', 'Random', '72.0', 'Magenta Dark|1.000|60.000|12.000|41.000:12.000', 'nouman', '19.000,12.000']
+            print("Normal Transaction Return\n",self.current)
+            
+            self.lib.lmm.delete(self.current[0]) # Deleting Record from the HMM
+            
+            # Updating Stats to reduce profit and tax from the log
+            profit, tax = self.current[-1].split(',')
+            t = self.currrent[1]
+            date,month,year = t[8:10],t[4:7],t[-4:]
+            self.lmm.cursor.execute("UPDATE stats SET `Profit Salewise` = `Profit Salewise` - \'%s\' , Tax = Tax - \'%s\' WHERE Date=\'%s\' AND Month=\'%s\' AND Year=\'%s\'"%(profit,tax,date,month,year))
+
+            # Re-stocking the inventory
+            items = self.current[4]
+            for i in items.split(','):
+                
+
+
+        self.assertain.setChecked(False)
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "EMS | Return Facility", None))

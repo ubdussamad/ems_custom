@@ -19,7 +19,7 @@ class lmm ( object ):
         def create_db (self):
                 self.cursor.execute("CREATE TABLE IF NOT EXISTS hmm( T_id REAL, Time TEXT, C_id REAL, Net_Amt REAL, Products TEXT)")
 
-        def update ( self, t_id ):
+        def delete( self, t_id ):
                 #Deleting routines
                 self.cursor.execute('DELETE FROM hmm WHERE T_id = (?)', (t_id,))
                 self.server.commit()

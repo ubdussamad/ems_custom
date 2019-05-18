@@ -7,7 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-
+import base64
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -21,6 +21,14 @@ try:
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
+'''
+# TODO
+
+* Make internal searching routine *
+* Develop internal return routine
+* Test everything
+* Ask nouman bhai for payment
+'''
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -117,13 +125,21 @@ class Ui_Dialog(object):
         # 1. Get Search Target
         self.data = self.__access()
         if self.internal.isChecked() and self.data:
-            print("Intializing internal searching routine")
-            print("Internal len is" , len(self.data))
+            # Internal Serching Rotuine
+            def floatify(x):
+                try:
+                    return(str(float(x)))
+                except:
+                    return(x)
+            tmp = []
+            for i in self.data:
+                if floatify(i[0]).lower().startswith(str(key).lower()):
+                    tmp.append(i)
+            self.data = tmp
 
         else:
             # Incase it's not an internal search
             self.data = self.lib.lmm.search(str(key))
-            print("External len is" , len(self.data))
 
         self.ttable.setRowCount(0)
         self.ttable.setColumnCount(0)
@@ -152,8 +168,8 @@ class Ui_Dialog(object):
             self.current.append(self.pt[0][0])
             with open('resources/recipt_popup_format.html') as f:
                 o = f.read()
-            header_text = o%(self.current[0],self.current[1],self.current[2],self.current[3],self.current[-1])
-            k = [[j for j in i.split('|') if all(j)] for i in self.current[-2].split(',') if all(i)]
+            header_text = o%(self.current[0],self.current[1],self.current[2],self.current[3],self.current[-2])
+            k = [[j for j in i.split('|') if all(j)][:-1] for i in self.current[-3].split(',') if all(i)]
             l = '<tr><td>'+'</td></tr><tr><td>'.join([ '</td><td>'.join(i) for i in k])+'</td></tr>'
             self.row_data = header_text+l+'</table></body></html>'
             self.scr.setHtml(self.row_data)
@@ -165,7 +181,7 @@ class Ui_Dialog(object):
             with open('resources/recipt_popup_format2.html') as f:
                 o = f.read()
             header_text = o%(self.current[0],self.current[2],self.current[1],self.current[3])
-            k = [[j for j in i.split('|') if all(j)][:3] for i in self.current[4].split(',') if all(i)]
+            k = [[j for j in i.split('|') if all(j)] for i in self.current[4].split(',') if all(i)]
             l = '<tr><td>'+'</td></tr><tr><td>'.join([ '</td><td>'.join(i) for i in k])+'</td></tr>'
             self.row_data = header_text+l+'</table></body></html>'
             self.scr.setHtml(self.row_data)
@@ -196,10 +212,17 @@ class Ui_Dialog(object):
         for i in raw.split('\n'):
             if len(i) > 2:
                 self.__data.append(decrypt(i).strip('\n').split('&sep'))
-        #print("INTR:",len(self.__data))
         if self.__auth == 0:
             return(self.__data)
         return(None)
+
+    def __encode(self,key, clear):
+        enc = []
+        for i in range(len(clear)):
+            key_c = key[i % len(key)]
+            enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
+            enc.append(enc_c)
+        return base64.urlsafe_b64encode("".join(enc).encode()).decode()
 
     def commit_return(self):
         '''
@@ -208,9 +231,11 @@ class Ui_Dialog(object):
         * If it's a simple transaction
             > Delete Record from HMM (Thus deleting Total Amount thingy automatically)
             > Deduct Profit , Tax from Stats
+            > Update CMM for customer net transaction Deduction
             > Append the inventory A/c to the list
         * If it's a Internal Transaction
             > Delete Record from Config Integrity
+            > Not Sure  if an internal transaction logs the amount in CMM or not
             > Deduct Profit from Stats (Key Column)
             > Append the inventory A/c to the list
         '''
@@ -218,29 +243,132 @@ class Ui_Dialog(object):
             return
 
         if self.intr: # Meaning It's an Internal Sale
-            print("Internal Sale Return\n",self.current)
-            # Do a bit more Stuff
+            '''
+            TODO:
+            * Gather the whole list of internal sales
+            * Delete the specific Transaction from that list
+            * Taylor the writing algorithm to write all the lines togather form a list
+            * Write Deduct Profit from Stats
+            * Do the Inventory Restocking magic
+            '''
+
+            #print("Internal Sale Return\n",self.current)
+
+            # Deleting the transaction details from the list
+            for j,i in enumerate(self.data):
+                if i[0] == self.current[0]:
+                    del self.data[j]
+                    break
+            else:
+                print("Transaction not in history!")
+                return
+
+            # Writing that list back to config integrity
+            path = 'resources/config_integrity.config'
+            self.__key = 'e'
+            self.__key  += 'mscustom'
+            with open(path,'w') as file_pointer:#Since we're re-writing the whole file we always write in w mode
+                for data in self.data: # Very Slow loop
+                    if not any(data):
+                        return
+                    data = '&sep'.join(map(str,data))
+                    data = self.__encode(self.__key ,data)
+                    file_pointer.write(data+'\n')
+                file_pointer.flush()
+                file_pointer.close()
+
+            # Reducing the profit from that key thing
+            profit, tax = self.current[-1].split(',')
+            print("Profit %f and tax %f"%(float(profit) , float(tax) ))
+            t = self.current[2]
+            print("The t is : %s"%t)
+            date,month,year = t[8:10],t[4:7],t[-4:]
+            print(date,month,year)
+            self.lib.lmm.cursor.execute("UPDATE stats SET `key` = `key` - \'%s\' WHERE Date=\'%s\' AND Month=\'%s\' AND Year=\'%s\'"%(profit,date,month,year))
+            self.lib.lmm.server.commit()
 
         else:  # Meaning it's Normal Sale
             # Format for data
             # ['1557981425.0', 'Thu May 16 10:07:05 2019', 'Random', '72.0', 'Magenta Dark|1.000|60.000|12.000|41.000:12.000', 'nouman', '19.000,12.000']
             print("Normal Transaction Return\n",self.current)
-            
+            print("Self.current is: \n",self.current)
             self.lib.lmm.delete(self.current[0]) # Deleting Record from the HMM
+
+            # Handles Updating CMM for the deduction
+            customer_id = self.lib.cmm.client_to_id(self.current[2])
+            self.lib.cmm.cursor.execute('UPDATE cmm SET Net_Transactions = Net_Transactions - (?) WHERE C_id = (?)',
+                                                    (self.current[3] , customer_id ))
+            self.lib.cmm.server.commit()
             
             # Updating Stats to reduce profit and tax from the log
+            
             profit, tax = self.current[-1].split(',')
-            t = self.currrent[1]
+            t = self.current[1]
             date,month,year = t[8:10],t[4:7],t[-4:]
-            self.lmm.cursor.execute("UPDATE stats SET `Profit Salewise` = `Profit Salewise` - \'%s\' , Tax = Tax - \'%s\' WHERE Date=\'%s\' AND Month=\'%s\' AND Year=\'%s\'"%(profit,tax,date,month,year))
+            self.lib.lmm.cursor.execute("UPDATE stats SET `Profit Salewise` = `Profit Salewise` - \'%s\' , Tax = Tax - \'%s\' WHERE Date=\'%s\' AND Month=\'%s\' AND Year=\'%s\'"%(profit,tax,date,month,year))
+            self.lib.lmm.server.commit()
 
-            # Re-stocking the inventory
-            items = self.current[4]
-            for i in items.split(','):
-                
+        
 
 
+        items = self.current[4]
+        for i in items.split(','): # Here i is a specific item
+            print("Processing:",i,'\n')
+            i = i.split('|')
+            pid = i[0]
+            modrate = i[4].split('%20')
+            qty = float(i[1])
+            self.lib.lmm.cursor.execute("UPDATE ivn SET Quantity = Quantity + (?) WHERE P_id = (?)",(qty,pid))
+            self.lib.lmm.server.commit()
+            modrate = { float(i.split(':')[0]):float(i.split(':')[1]) for i in modrate if i}
+            last_mod_rate = 0
+            for i in modrate: # "i" is price here
+                if modrate[i] >= qty: #If partial Stock > Demand
+                    print("Partial Stock Quantity Fills %s : Qty: %.1f , PStq: %.1f "%(pid,qty,modrate[i]))
+                    self.update_stk(pid, i, qty)
+                    qty = 0
+                    break
+                else:
+                    print("Partial Stock is less than %s , Qty:%.1f , PStq: %.1f"%(pid,qty,modrate[i]),'\n')
+                    self.update_stk(pid, i, modrate[i])
+                    last_mod_rate = i
+                    qty -= modrate[i]
+            if qty > 0.001:
+                self.update_stk(pid, last_mod_rate, qty)
+        # Re-stocking the inventory us same for both the cases given nothing bad happens the inventory will be 
+        # Restocked
+
+
+        print("Done!")
         self.assertain.setChecked(False)
+        self.scr.setHtml("<h1 align='center'> Item Return Sucesss!! </h1>")
+        self.current = []
+
+    def update_stk(self,p_id,rate,qty):
+        modrate = self.lib.imm.get_mod_rate(p_id)
+        modrate = { float(i.split(':')[0]):float(i.split(':')[1]) for i in modrate if i}
+        qty,rate = float(qty),float(rate)
+        if not modrate: # {25:30,27:60} There isn't a modrate Log
+            #Get the value and create modrate
+            #modrate.append('%.3f:%.3f'%(float(rate),float(qty)))
+            modrate[rate] = qty
+
+        else:
+            # The modrates are present
+            '''
+             > Check if the same mod rate is present and increment
+             > Else add the new mod rate and be happy with it
+             '''
+            try: # If this dosent fails then it means whe have 
+                val = modrate[rate]
+                modrate[rate] += qty
+            except:
+                # The rate value ins't present in the dict
+                modrate[rate] = qty
+
+        modrate = [ ':'.join(map(str,[i,modrate[i]])) for i in modrate.keys() ]
+        modrate = ','.join(modrate)
+        self.lib.imm.update(p_id,'mod_rate',[modrate])
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "EMS | Return Facility", None))

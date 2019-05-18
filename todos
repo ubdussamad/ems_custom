@@ -1,9 +1,13 @@
 #TODO Logs
 
 * Check for Internal history Searching Bug *
-* Check for expense mangemnet Bug
-* Add the Return Utilities
-* Ask Nouman bhai if he wants custom shortcuts
+* Check for expense mangemnet Bug *
+* Add the Return Utilities *
+* Ask Nouman bhai if he wants custom shortcuts *
+* Assert that there should be no '|' in the inventory item names. (HP)
+* Inventory Deduction is in question (UHP) 12.000:2.000,13.000:1.000,12.500:2.000 *
+* CMM Not upgrading on transaction *
+* CMM should be redacted too when a return is filed *
 
 #Future Possibilities
 

@@ -91,7 +91,7 @@ class ems_core ( object):
             # i looks like [p_id , qty  , unit, rate , tax]
             i = list(map(floatify,i))
             modrate = self.imm.get_mod_rate(p_id)
-            self.meta_data[p_id] = ','.join(modrate)
+            self.meta_data[p_id] = '%20'.join(modrate)
             #print("\nPid is: %s \n Modrate: %s and Qty: %s"%(p_id,modrate,str(i[1]))
             modrate = { float(i.split(':')[0]):float(i.split(':')[1]) for i in modrate if i}
             sp += i[1]*i[3] # Selling price

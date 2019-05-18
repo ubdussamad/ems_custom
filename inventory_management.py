@@ -71,25 +71,27 @@ class Ui_MainWindow(object):
 
     def update_stk(self,p_id,rate,qty):
         modrate = some.imm.get_mod_rate(p_id)
-        modrate = [i for i in modrate if i]
-        if not modrate: #25:30,27:60
+        modrate = { float(i.split(':')[0]):float(i.split(':')[1]) for i in modrate if i}
+        qty,rate = float(qty),float(rate)
+        if not modrate: # {25:30,27:60} There isn't a modrate Log
             #Get the value and create modrate
-            modrate.append('%.3f:%.3f'%(float(rate),float(qty)))
-
+            #modrate.append('%.3f:%.3f'%(float(rate),float(qty)))
+            modrate[rate] = qty
 
         else:
-            rate_list = [i.split(':')[0] for i in modrate]
-            if rate in rate_list:
-                index = rate_list.index(rate)
-                tmp = modrate.pop(index)
-                tmp = [ float(i)  for i in tmp.split(':') ]
-                tmp[1] += float(qty)
-                modrate.append(':'.join(map(str,tmp)))
+            # The modrates are present
+            '''
+             > Check if the same mod rate is present and increment
+             > Else add the new mod rate and be happy with it
+             '''
+            try: # If this dosent fails then it means whe have 
+                val = modrate[rate]
+                modrate[rate] += qty
+            except:
+                # The rate value ins't present in the dict
+                modrate[rate] = qty
 
-            else:
-                #Append is not in the rate list
-                modrate.append('%.3f:%.3f'%(float(rate),float(qty)))
-        modrate = [i for i in modrate if i]
+        modrate = [ ':'.join(map(str,[i,modrate[i]])) for i in modrate.keys() ]
         modrate = ','.join(modrate)
         some.imm.update(p_id,'mod_rate',[modrate])
 

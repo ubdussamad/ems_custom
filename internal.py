@@ -163,6 +163,7 @@ class Ui_MainWindow(object):
         # kt = 0 (for t_id) , 1 (for customer)
         # Trim the history list here
 
+
         def floatify(x):
             try:
                 return(str(float(x)))

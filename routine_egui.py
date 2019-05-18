@@ -80,7 +80,7 @@ class Printer(QtGui.QDialog):
 
 class Ui_EMS(object):
     def __get_ttype(self):
-        self.__higher_priority = USER.lower() in ['nouman','desk1','desk2','desk3'] #The user has auth
+        self.__higher_priority = USER.lower() in ['noman','desk1','desk2','desk3'] #The user has auth
         self.__internal_sale = self.radioButton.isChecked() # The user wishes to proceed to internal sale
         return(self.__higher_priority and self.__internal_sale)
 

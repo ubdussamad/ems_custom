@@ -16,3 +16,8 @@
   and Qtable widget would take days to load all of it
   so, the history management should have a log
   display limit.
+
+
+ # Passwrds
+  > Admins : { 'noman':6911 ,'desk1': 4392 ,'desk2': 4592,'desk3':6903 }
+  > Users : { 'user1' : 1998 , 'user2' : 1658 , 'user3' :6666}

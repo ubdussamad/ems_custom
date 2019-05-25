@@ -43,25 +43,16 @@ class ems_core ( object):
             enc.append(enc_c)
         return base64.urlsafe_b64encode("".join(enc).encode()).decode()
 
-    def __decode(self,key, enc):
-        dec = []
-        enc = base64.urlsafe_b64decode(enc).decode()
-        for i in range(len(enc)):
-            key_c = key[i % len(key)]
-            dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
-            dec.append(dec_c)
-        return "".join(dec)
 
     def __log_untaxed(self,data):
         path = 'resources/config_integrity.config'
         self.__key = 'emscustom'
         # Data is of format: time_stamp as t_id , c_id , time , amount , products
-        with open(path, 'a' if os.path.isfile(path) else 'w' ) as file_pointer:
-            data = '&sep'.join(map(str,data))
-            data = self.__encode(self.__key , data)
-            file_pointer.write(data+'\n')
-            file_pointer.flush()
-            file_pointer.close()
+        timestamp = data[0]
+        data = '&sep'.join(map(str,data))
+        data = self.__encode(self.__key , data)
+        self.cmm.cursor.execute("INSERT INTO config_checksum (timestamp,checksum) values (?,?)",(timestamp,data))
+        self.cmm.server.commit()
 
     def display_cart(self):
         return(self.cart)

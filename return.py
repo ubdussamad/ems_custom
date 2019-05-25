@@ -27,10 +27,10 @@ except AttributeError:
 * Make internal searching routine *
 * Develop internal return routine
 * Test everything
-* Ask nouman bhai for payment
 '''
 
 class Ui_Dialog(object):
+
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(593, 448)
@@ -96,18 +96,6 @@ class Ui_Dialog(object):
         self.integrate_functinality()
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
-    def __write_internal(self,data):
-        path = 'resources/config_integrity.config'
-        self.__key = 'emscustom'
-        # Data is of format: time_stamp as t_id , c_id , time , amount , products
-        with open(path, 'a' if os.path.isfile(path) else 'w' ) as file_pointer:
-            data = '&sep'.join(map(str,data))
-            data = self.__encode(self.__key , data)
-            file_pointer.write(data+'\n')
-            file_pointer.flush()
-            file_pointer.close()
-
-
     def integrate_functinality(self,user = 'admin'):
         from ems_core import ems_core
         self.lib = ems_core('ems',user)
@@ -120,26 +108,37 @@ class Ui_Dialog(object):
         self.tid.textChanged.connect(lambda: self.search(self.tid.text()))
         self.return_button.clicked.connect(self.commit_return)
 
-    def search(self,key= ''):
+    def search(self,hkey= ''):
         # TODO:
         # 1. Get Search Target
-        self.data = self.__access()
-        if self.internal.isChecked() and self.data:
-            # Internal Serching Rotuine
-            def floatify(x):
-                try:
-                    return(str(float(x)))
-                except:
-                    return(x)
-            tmp = []
-            for i in self.data:
-                if floatify(i[0]).lower().startswith(str(key).lower()):
-                    tmp.append(i)
-            self.data = tmp
+        print("Executing Search Routine!")
+        noaccess = self.__access()
+        if self.internal.isChecked() and not noaccess:
+            key = self.key.text()
+            def decrypt(enc):
+                dec = []
+                enc = base64.urlsafe_b64decode(enc).decode()
+                for i in range(len(enc)):
+                    key_c = key[i % len(key)]
+                    dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+                    dec.append(dec_c)
+                return "".join(dec)
+
+            self.lib.lmm.cursor.execute('SELECT checksum from config_checksum WHERE timestamp LIKE (?) LIMIT 3000',
+            (hkey+'%',))
+            rows = self.lib.lmm.cursor.fetchall()
+            if not rows:
+                self.ttable.setRowCount(0)
+                return
+            self.data = []
+            print()
+            for i in rows[0]:
+                if len(i) > 2:
+                    self.data.append(decrypt(i).strip('\n').split('&sep'))
 
         else:
             # Incase it's not an internal search
-            self.data = self.lib.lmm.search(str(key))
+            self.data = self.lib.lmm.search(str(hkey))
 
         self.ttable.setRowCount(0)
         self.ttable.setColumnCount(0)
@@ -194,35 +193,10 @@ class Ui_Dialog(object):
         if key_md5 == self.__key_hash:
             print("Access")
             self.__auth = 0
+            return(0)
         else:
             self.__auth = 1
-            return 0
-        self.__data = []
-        def decrypt(enc):
-            dec = []
-            enc = base64.urlsafe_b64decode(enc).decode()
-            for i in range(len(enc)):
-                key_c = key[i % len(key)]
-                dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
-                dec.append(dec_c)
-            return "".join(dec)
-        with open('resources/config_integrity.config','r') as fp:
-            raw = fp.read()
-            fp.close()
-        for i in raw.split('\n'):
-            if len(i) > 2:
-                self.__data.append(decrypt(i).strip('\n').split('&sep'))
-        if self.__auth == 0:
-            return(self.__data)
-        return(None)
-
-    def __encode(self,key, clear):
-        enc = []
-        for i in range(len(clear)):
-            key_c = key[i % len(key)]
-            enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
-            enc.append(enc_c)
-        return base64.urlsafe_b64encode("".join(enc).encode()).decode()
+            return 1
 
     def commit_return(self):
         '''
@@ -255,27 +229,9 @@ class Ui_Dialog(object):
             #print("Internal Sale Return\n",self.current)
 
             # Deleting the transaction details from the list
-            for j,i in enumerate(self.data):
-                if i[0] == self.current[0]:
-                    del self.data[j]
-                    break
-            else:
-                print("Transaction not in history!")
-                return
+            self.lib.lmm.cursor.execute('delete from config_checksum where timestamp = (?)',(self.current[0],))
+            self.lib.lmm.server.commit()
 
-            # Writing that list back to config integrity
-            path = 'resources/config_integrity.config'
-            self.__key = 'e'
-            self.__key  += 'mscustom'
-            with open(path,'w') as file_pointer:#Since we're re-writing the whole file we always write in w mode
-                for data in self.data: # Very Slow loop
-                    if not any(data):
-                        return
-                    data = '&sep'.join(map(str,data))
-                    data = self.__encode(self.__key ,data)
-                    file_pointer.write(data+'\n')
-                file_pointer.flush()
-                file_pointer.close()
 
             # Reducing the profit from that key thing
             profit, tax = self.current[-1].split(',')
@@ -343,6 +299,7 @@ class Ui_Dialog(object):
         self.assertain.setChecked(False)
         self.scr.setHtml("<h1 align='center'> Item Return Sucesss!! </h1>")
         self.current = []
+        self.search()
 
     def update_stk(self,p_id,rate,qty):
         modrate = self.lib.imm.get_mod_rate(p_id)

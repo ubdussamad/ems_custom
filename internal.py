@@ -106,11 +106,10 @@ class Ui_MainWindow(object):
 
     def __access(self):
         key = self.key.text()
-        self.__key_hash = '04a11c0ac3d39a7d59c2ee0cdcdcabb4' #emscustom
+        self.__key_hash = '04a11c0ac'+'3d39a7d'+'59c2ee0'+'cdcdcabb4' #emscustom
         key_md5 = hashlib.md5(key.encode('utf-8')).hexdigest()
         if key_md5 == self.__key_hash:
             self.__auth = 0
-            #print("Access")
         else:
             self.__auth = 1
             self.update_routine()
@@ -124,10 +123,11 @@ class Ui_MainWindow(object):
                 dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
                 dec.append(dec_c)
             return "".join(dec)
-        with open('resources/config_integrity.config','r') as fp:
-            raw = fp.read()
-            fp.close()
-        for i in raw.split('\n'):
+        
+        some.lmm.cursor.execute('SELECT checksum from config_checksum ORDER BY timestamp DESC LIMIT 100000')
+        rows = some.lmm.cursor.fetchall()
+
+        for i in rows[0]:
             if len(i) > 2:
                 self.__data.append(decrypt(i).strip('\n').split('&sep'))
         return
@@ -162,32 +162,34 @@ class Ui_MainWindow(object):
     def update_history(self,key = '' ,kt = 0):
         # kt = 0 (for t_id) , 1 (for customer)
         # Trim the history list here
-
-
-        def floatify(x):
-            try:
-                return(str(float(x)))
-            except:
-                return(x)
-
         if self.__auth:
             return
-        self.history_tuple = sorted(self.__data,key=lambda x:x[0])
 
-        if key:
-            if kt==1:
-                key = some.cmm.c2id(key.lower())
-                
-                try:
-                    key=key[0][0]
-                except:
-                    self.history.setRowCount(0)
-                    return
-            tmp = []
-            for i in self.history_tuple:
-                if floatify(i[kt]).lower().startswith(str(key).lower()):
-                    tmp.append(i)
-            self.history_tuple = tmp
+        some.lmm.cursor.execute('SELECT checksum from config_checksum WHERE timestamp LIKE (?) LIMIT 3000',
+            (key+'%',))
+        rows = some.lmm.cursor.fetchall()
+        self.history_tuple = []
+        key = self.key.text()
+
+        def decrypt(enc):
+            dec = []
+            enc = base64.urlsafe_b64decode(enc).decode()
+            for i in range(len(enc)):
+                key_c = key[i % len(key)]
+                dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+                dec.append(dec_c)
+            return "".join(dec)
+
+
+        if not len(rows):
+            self.history.setRowCount(0)
+            return
+
+
+        for i in rows[0]:
+            if len(i) > 2:
+                self.history_tuple.append(decrypt(i).strip('\n').split('&sep'))
+
 
 
         self.history.setColumnCount(0)
@@ -235,11 +237,11 @@ class Ui_MainWindow(object):
         self.date.textChanged.connect(lambda x:self.update_history(self.date.text(),0))
         self.gridLayout.addWidget(self.date, 0, 0, 1, 1)
 
-        #Search by customer name
-        self.cname = QtGui.QLineEdit(self.centralwidget)
-        self.cname.setObjectName(_fromUtf8("cname"))
-        self.cname.textChanged.connect(lambda x:self.update_history(self.cname.text(),1))
-        self.gridLayout.addWidget(self.cname, 0, 1, 1, 1)
+        # #Search by customer name
+        # self.cname = QtGui.QLineEdit(self.centralwidget)
+        # self.cname.setObjectName(_fromUtf8("cname"))
+        # self.cname.textChanged.connect(lambda x:self.update_history(self.cname.text(),1))
+        # self.gridLayout.addWidget(self.cname, 0, 1, 1, 1)
         #History Table
         self.history = QtGui.QTableWidget(self.centralwidget)
         self.history.setObjectName(_fromUtf8("history"))
@@ -325,7 +327,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "EMS | Internal Sales Record", None))
         self.date.setPlaceholderText(_translate("MainWindow", "Search  with date", None))
-        self.cname.setPlaceholderText(_translate("MainWindow", "Search with customer name", None))
+        #self.cname.setPlaceholderText(_translate("MainWindow", "Search with customer name", None))
         self.label_4.setText(_translate("MainWindow", "Total Sale For the month:", None))
         self.label_5.setText(_translate("MainWindow", "        and Year:", None))
         self.update.setText(_translate("MainWindow", "Update", None))

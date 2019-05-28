@@ -6,107 +6,89 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import base64
 try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QtWidgets.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QtCore.QCoreApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QtCore.QCoreApplication.translate(context, text, disambig)
 '''
 # TODO
 
 * Make internal searching routine *
 * Develop internal return routine
 * Test everything
-* Ask nouman bhai for payment
 '''
 
 class Ui_Dialog(object):
+
     def setupUi(self, Dialog):
-        Dialog.setObjectName(_fromUtf8("Dialog"))
+        Dialog.setObjectName("Dialog")
         Dialog.resize(593, 448)
         Dialog.setSizeGripEnabled(True)
         Dialog.setModal(False)
-        self.verticalLayout = QtGui.QVBoxLayout(Dialog)
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.splitter = QtGui.QSplitter(Dialog)
+        self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.splitter = QtWidgets.QSplitter(Dialog)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter.setObjectName(_fromUtf8("splitter"))
-        self.layoutWidget = QtGui.QWidget(self.splitter)
-        self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
-        self.gridLayout = QtGui.QGridLayout(self.layoutWidget)
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.internal = QtGui.QCheckBox(self.layoutWidget)
-        self.internal.setObjectName(_fromUtf8("internal"))
+        self.splitter.setObjectName("splitter")
+        self.layoutWidget = QtWidgets.QWidget(self.splitter)
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.layoutWidget)
+        self.gridLayout.setObjectName("gridLayout")
+        self.internal = QtWidgets.QCheckBox(self.layoutWidget)
+        self.internal.setObjectName("internal")
         self.gridLayout.addWidget(self.internal, 1, 1, 1, 1)
-        self.tid = QtGui.QLineEdit(self.layoutWidget)
-        self.tid.setWhatsThis(_fromUtf8(""))
-        self.tid.setObjectName(_fromUtf8("tid"))
+        self.tid = QtWidgets.QLineEdit(self.layoutWidget)
+        self.tid.setWhatsThis("")
+        self.tid.setObjectName("tid")
         self.gridLayout.addWidget(self.tid, 1, 0, 1, 1)
-        self.ttable = QtGui.QTableWidget(self.layoutWidget)
-        self.ttable.setObjectName(_fromUtf8("ttable"))
+        self.ttable = QtWidgets.QTableWidget(self.layoutWidget)
+        self.ttable.setObjectName("ttable")
         self.ttable.setColumnCount(0)
         self.ttable.setRowCount(0)
         self.gridLayout.addWidget(self.ttable, 3, 0, 1, 2)
-        self.label = QtGui.QLabel(self.layoutWidget)
-        self.label.setObjectName(_fromUtf8("label"))
+        self.label = QtWidgets.QLabel(self.layoutWidget)
+        self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 2)
-        self.key_chk_button = QtGui.QPushButton(self.layoutWidget)
-        self.key_chk_button.setObjectName(_fromUtf8("key_chk_button"))
+        self.key_chk_button = QtWidgets.QPushButton(self.layoutWidget)
+        self.key_chk_button.setObjectName("key_chk_button")
         self.gridLayout.addWidget(self.key_chk_button, 2, 1, 1, 1)
-        self.key = QtGui.QLineEdit(self.layoutWidget)
-        self.key.setEchoMode(QtGui.QLineEdit.Password)
+        self.key = QtWidgets.QLineEdit(self.layoutWidget)
+        self.key.setEchoMode(QtWidgets.QLineEdit.Password)
         self.key.setDragEnabled(True)
-        self.key.setObjectName(_fromUtf8("key"))
+        self.key.setObjectName("key")
         self.gridLayout.addWidget(self.key, 2, 0, 1, 1)
-        self.layoutWidget1 = QtGui.QWidget(self.splitter)
-        self.layoutWidget1.setObjectName(_fromUtf8("layoutWidget1"))
-        self.gridLayout_2 = QtGui.QGridLayout(self.layoutWidget1)
-        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
-        self.label_2 = QtGui.QLabel(self.layoutWidget1)
-        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.layoutWidget1 = QtWidgets.QWidget(self.splitter)
+        self.layoutWidget1.setObjectName("layoutWidget1")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.layoutWidget1)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.label_2 = QtWidgets.QLabel(self.layoutWidget1)
+        self.label_2.setObjectName("label_2")
         self.gridLayout_2.addWidget(self.label_2, 0, 0, 1, 2)
-        self.scr = QtGui.QTextBrowser(self.layoutWidget1)
-        self.scr.setObjectName(_fromUtf8("scr"))
+        self.scr = QtWidgets.QTextBrowser(self.layoutWidget1)
+        self.scr.setObjectName("scr")
         self.gridLayout_2.addWidget(self.scr, 1, 0, 1, 2)
-        self.return_button = QtGui.QPushButton(self.layoutWidget1)
+        self.return_button = QtWidgets.QPushButton(self.layoutWidget1)
         font = QtGui.QFont()
         font.setBold(True)
         font.setUnderline(True)
         font.setWeight(75)
         self.return_button.setFont(font)
-        self.return_button.setStyleSheet(_fromUtf8("color:\"dark red\""))
-        self.return_button.setObjectName(_fromUtf8("return_button"))
+        self.return_button.setStyleSheet("color:\"dark red\"")
+        self.return_button.setObjectName("return_button")
         self.gridLayout_2.addWidget(self.return_button, 2, 0, 1, 1)
-        self.assertain = QtGui.QCheckBox(self.layoutWidget1)
-        self.assertain.setObjectName(_fromUtf8("assertain"))
+        self.assertain = QtWidgets.QCheckBox(self.layoutWidget1)
+        self.assertain.setObjectName("assertain")
         self.gridLayout_2.addWidget(self.assertain, 2, 1, 1, 1)
         self.verticalLayout.addWidget(self.splitter)
 
         self.retranslateUi(Dialog)
         self.integrate_functinality()
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-
-    def __write_internal(self,data):
-        path = 'resources/config_integrity.config'
-        self.__key = 'emscustom'
-        # Data is of format: time_stamp as t_id , c_id , time , amount , products
-        with open(path, 'a' if os.path.isfile(path) else 'w' ) as file_pointer:
-            data = '&sep'.join(map(str,data))
-            data = self.__encode(self.__key , data)
-            file_pointer.write(data+'\n')
-            file_pointer.flush()
-            file_pointer.close()
-
 
     def integrate_functinality(self,user = 'admin'):
         from ems_core import ems_core
@@ -120,26 +102,37 @@ class Ui_Dialog(object):
         self.tid.textChanged.connect(lambda: self.search(self.tid.text()))
         self.return_button.clicked.connect(self.commit_return)
 
-    def search(self,key= ''):
+    def search(self,hkey= ''):
         # TODO:
         # 1. Get Search Target
-        self.data = self.__access()
-        if self.internal.isChecked() and self.data:
-            # Internal Serching Rotuine
-            def floatify(x):
-                try:
-                    return(str(float(x)))
-                except:
-                    return(x)
-            tmp = []
-            for i in self.data:
-                if floatify(i[0]).lower().startswith(str(key).lower()):
-                    tmp.append(i)
-            self.data = tmp
+        print("Executing Search Routine!")
+        noaccess = self.__access()
+        if self.internal.isChecked() and not noaccess:
+            key = self.key.text()
+            def decrypt(enc):
+                dec = []
+                enc = base64.urlsafe_b64decode(enc).decode()
+                for i in range(len(enc)):
+                    key_c = key[i % len(key)]
+                    dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
+                    dec.append(dec_c)
+                return "".join(dec)
+
+            self.lib.lmm.cursor.execute('SELECT checksum from config_checksum WHERE timestamp LIKE (?) LIMIT 3000',
+            (hkey+'%',))
+            rows = self.lib.lmm.cursor.fetchall()
+            if not rows:
+                self.ttable.setRowCount(0)
+                return
+            self.data = []
+            print()
+            for i in rows[0]:
+                if len(i) > 2:
+                    self.data.append(decrypt(i).strip('\n').split('&sep'))
 
         else:
             # Incase it's not an internal search
-            self.data = self.lib.lmm.search(str(key))
+            self.data = self.lib.lmm.search(str(hkey))
 
         self.ttable.setRowCount(0)
         self.ttable.setColumnCount(0)
@@ -148,12 +141,12 @@ class Ui_Dialog(object):
         self.table_headers = ['Transac Id','Time','Customer Id','Amount','Products','Sold By']
         self.ttable.setHorizontalHeaderLabels(self.table_headers)
         self.ttable.setAlternatingRowColors(True)
-        self.ttable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.ttable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.ttable.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.ttable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ttable.itemSelectionChanged.connect(self.pull_up)
 
         for i in range(0,len(self.data)):
-            self.data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.data[i] ]
+            self.data_widgets = [QtWidgets.QTableWidgetItem(str(j)) for j in self.data[i] ]
             for j,k in enumerate(self.data_widgets):
                 self.ttable.setItem(i,j,k)
 
@@ -194,35 +187,10 @@ class Ui_Dialog(object):
         if key_md5 == self.__key_hash:
             print("Access")
             self.__auth = 0
+            return(0)
         else:
             self.__auth = 1
-            return 0
-        self.__data = []
-        def decrypt(enc):
-            dec = []
-            enc = base64.urlsafe_b64decode(enc).decode()
-            for i in range(len(enc)):
-                key_c = key[i % len(key)]
-                dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
-                dec.append(dec_c)
-            return "".join(dec)
-        with open('resources/config_integrity.config','r') as fp:
-            raw = fp.read()
-            fp.close()
-        for i in raw.split('\n'):
-            if len(i) > 2:
-                self.__data.append(decrypt(i).strip('\n').split('&sep'))
-        if self.__auth == 0:
-            return(self.__data)
-        return(None)
-
-    def __encode(self,key, clear):
-        enc = []
-        for i in range(len(clear)):
-            key_c = key[i % len(key)]
-            enc_c = chr((ord(clear[i]) + ord(key_c)) % 256)
-            enc.append(enc_c)
-        return base64.urlsafe_b64encode("".join(enc).encode()).decode()
+            return 1
 
     def commit_return(self):
         '''
@@ -255,27 +223,9 @@ class Ui_Dialog(object):
             #print("Internal Sale Return\n",self.current)
 
             # Deleting the transaction details from the list
-            for j,i in enumerate(self.data):
-                if i[0] == self.current[0]:
-                    del self.data[j]
-                    break
-            else:
-                print("Transaction not in history!")
-                return
+            self.lib.lmm.cursor.execute('delete from config_checksum where timestamp = (?)',(self.current[0],))
+            self.lib.lmm.server.commit()
 
-            # Writing that list back to config integrity
-            path = 'resources/config_integrity.config'
-            self.__key = 'e'
-            self.__key  += 'mscustom'
-            with open(path,'w') as file_pointer:#Since we're re-writing the whole file we always write in w mode
-                for data in self.data: # Very Slow loop
-                    if not any(data):
-                        return
-                    data = '&sep'.join(map(str,data))
-                    data = self.__encode(self.__key ,data)
-                    file_pointer.write(data+'\n')
-                file_pointer.flush()
-                file_pointer.close()
 
             # Reducing the profit from that key thing
             profit, tax = self.current[-1].split(',')
@@ -343,6 +293,7 @@ class Ui_Dialog(object):
         self.assertain.setChecked(False)
         self.scr.setHtml("<h1 align='center'> Item Return Sucesss!! </h1>")
         self.current = []
+        self.search()
 
     def update_stk(self,p_id,rate,qty):
         modrate = self.lib.imm.get_mod_rate(p_id)
@@ -384,8 +335,8 @@ class Ui_Dialog(object):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
-    Dialog = QtGui.QDialog()
+    app = QtWidgets.QApplication(sys.argv)
+    Dialog = QtWidgets.QDialog()
     ui = Ui_Dialog()
     ui.setupUi(Dialog)
     Dialog.show()

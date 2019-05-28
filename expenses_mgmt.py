@@ -6,70 +6,64 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import time
 try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QtWidgets.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QtCore.QCoreApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QtCore.QCoreApplication.translate(context, text, disambig)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.setObjectName("MainWindow")
         MainWindow.resize(705, 540)
-        self.centralwidget = QtGui.QWidget(MainWindow)
-        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.gridLayout_3 = QtGui.QGridLayout(self.centralwidget)
-        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
-        self.splitter = QtGui.QSplitter(self.centralwidget)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.splitter = QtWidgets.QSplitter(self.centralwidget)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter.setObjectName(_fromUtf8("splitter"))
-        self.layoutWidget = QtGui.QWidget(self.splitter)
-        self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.layoutWidget)
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.gridLayout_2 = QtGui.QGridLayout()
-        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
-        self.description = QtGui.QLineEdit(self.layoutWidget)
+        self.splitter.setObjectName("splitter")
+        self.layoutWidget = QtWidgets.QWidget(self.splitter)
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.layoutWidget)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.gridLayout_2 = QtWidgets.QGridLayout()
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.description = QtWidgets.QLineEdit(self.layoutWidget)
         self.description.setMinimumSize(QtCore.QSize(300, 0))
-        self.description.setObjectName(_fromUtf8("description"))
+        self.description.setObjectName("description")
         self.gridLayout_2.addWidget(self.description, 1, 3, 1, 2)
-        self.search = QtGui.QLineEdit(self.layoutWidget)
-        self.search.setObjectName(_fromUtf8("search"))
+        self.search = QtWidgets.QLineEdit(self.layoutWidget)
+        self.search.setObjectName("search")
         self.gridLayout_2.addWidget(self.search, 3, 0, 1, 4)
-        self.add_for = QtGui.QComboBox(self.layoutWidget)
+        self.add_for = QtWidgets.QComboBox(self.layoutWidget)
         self.add_for.setMaxVisibleItems(10)
-        self.add_for.setInsertPolicy(QtGui.QComboBox.InsertAlphabetically)
-        self.add_for.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToContents)
-        self.add_for.setObjectName(_fromUtf8("add_for"))
+        self.add_for.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.add_for.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
+        self.add_for.setObjectName("add_for")
         self.gridLayout_2.addWidget(self.add_for, 1, 1, 1, 2)
-        self.qtype = QtGui.QComboBox(self.layoutWidget)
-        self.qtype.setObjectName(_fromUtf8("qtype"))
+        self.qtype = QtWidgets.QComboBox(self.layoutWidget)
+        self.qtype.setObjectName("qtype")
         self.gridLayout_2.addWidget(self.qtype, 3, 4, 1, 1)
-        self.log_button = QtGui.QPushButton(self.layoutWidget)
-        self.log_button.setObjectName(_fromUtf8("log_button"))
+        self.log_button = QtWidgets.QPushButton(self.layoutWidget)
+        self.log_button.setObjectName("log_button")
         self.gridLayout_2.addWidget(self.log_button, 2, 2, 1, 3)
-        self.red_exp = QtGui.QCheckBox(self.layoutWidget)
-        self.red_exp.setObjectName(_fromUtf8("red_exp"))
+        self.red_exp = QtWidgets.QCheckBox(self.layoutWidget)
+        self.red_exp.setObjectName("red_exp")
         self.gridLayout_2.addWidget(self.red_exp, 2, 0, 1, 2)
-        self.amount_add = QtGui.QLineEdit(self.layoutWidget)
-        self.amount_add.setObjectName(_fromUtf8("amount_add"))
+        self.amount_add = QtWidgets.QLineEdit(self.layoutWidget)
+        self.amount_add.setObjectName("amount_add")
         self.gridLayout_2.addWidget(self.amount_add, 1, 0, 1, 1)
-        self.label = QtGui.QLabel(self.layoutWidget)
-        self.label.setObjectName(_fromUtf8("label"))
+        self.label = QtWidgets.QLabel(self.layoutWidget)
+        self.label.setObjectName("label")
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 2)
         self.verticalLayout_2.addLayout(self.gridLayout_2)
-        self.log = QtGui.QTableWidget(self.layoutWidget)
-        self.log.setObjectName(_fromUtf8("log"))
+        self.log = QtWidgets.QTableWidget(self.layoutWidget)
+        self.log.setObjectName("log")
         self.log.setColumnCount(0)
         self.log.setRowCount(0)
         # self.log.setSortingEnabled(True)
@@ -77,43 +71,43 @@ class Ui_MainWindow(object):
         # self.log.horizontalHeader().setStretchLastSection(True)
         # self.log.verticalHeader().setSortIndicatorShown(True)
         self.verticalLayout_2.addWidget(self.log)
-        self.update_all = QtGui.QPushButton(self.layoutWidget)
-        self.update_all.setObjectName(_fromUtf8("update_all"))
+        self.update_all = QtWidgets.QPushButton(self.layoutWidget)
+        self.update_all.setObjectName("update_all")
         self.verticalLayout_2.addWidget(self.update_all)
-        self.layoutWidget1 = QtGui.QWidget(self.splitter)
-        self.layoutWidget1.setObjectName(_fromUtf8("layoutWidget1"))
-        self.verticalLayout = QtGui.QVBoxLayout(self.layoutWidget1)
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.label_2 = QtGui.QLabel(self.layoutWidget1)
-        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.layoutWidget1 = QtWidgets.QWidget(self.splitter)
+        self.layoutWidget1.setObjectName("layoutWidget1")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget1)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.label_2 = QtWidgets.QLabel(self.layoutWidget1)
+        self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2)
-        self.add_new = QtGui.QLineEdit(self.layoutWidget1)
-        self.add_new.setObjectName(_fromUtf8("add_new"))
+        self.add_new = QtWidgets.QLineEdit(self.layoutWidget1)
+        self.add_new.setObjectName("add_new")
         self.verticalLayout.addWidget(self.add_new)
-        self.add_new_push = QtGui.QPushButton(self.layoutWidget1)
-        self.add_new_push.setObjectName(_fromUtf8("add_new_push"))
+        self.add_new_push = QtWidgets.QPushButton(self.layoutWidget1)
+        self.add_new_push.setObjectName("add_new_push")
         self.verticalLayout.addWidget(self.add_new_push)
-        self.gridLayout = QtGui.QGridLayout()
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.label_3 = QtGui.QLabel(self.layoutWidget1)
-        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
+        self.label_3 = QtWidgets.QLabel(self.layoutWidget1)
+        self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 0, 0, 1, 1)
-        self.label_4 = QtGui.QLabel(self.layoutWidget1)
-        self.label_4.setObjectName(_fromUtf8("label_4"))
+        self.label_4 = QtWidgets.QLabel(self.layoutWidget1)
+        self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 1, 0, 1, 1)
-        self.name = QtGui.QLabel(self.layoutWidget1)
-        self.name.setObjectName(_fromUtf8("name"))
+        self.name = QtWidgets.QLabel(self.layoutWidget1)
+        self.name.setObjectName("name")
         self.gridLayout.addWidget(self.name, 0, 1, 1, 1)
-        self.amount = QtGui.QLabel(self.layoutWidget1)
-        self.amount.setObjectName(_fromUtf8("amount"))
+        self.amount = QtWidgets.QLabel(self.layoutWidget1)
+        self.amount.setObjectName("amount")
         self.gridLayout.addWidget(self.amount, 1, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
-        self.name_search = QtGui.QLineEdit(self.layoutWidget1)
-        self.name_search.setObjectName(_fromUtf8("name_search"))
+        self.name_search = QtWidgets.QLineEdit(self.layoutWidget1)
+        self.name_search.setObjectName("name_search")
         self.verticalLayout.addWidget(self.name_search)
-        self.name_table = QtGui.QTableWidget(self.layoutWidget1)
+        self.name_table = QtWidgets.QTableWidget(self.layoutWidget1)
         self.name_table.setWordWrap(False)
-        self.name_table.setObjectName(_fromUtf8("name_table"))
+        self.name_table.setObjectName("name_table")
         self.name_table.setColumnCount(0)
         self.name_table.setRowCount(0)
         # self.name_table.horizontalHeader().setCascadingSectionResizes(False)
@@ -122,19 +116,19 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.name_table)
         self.gridLayout_3.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 705, 25))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        self.menuFile = QtGui.QMenu(self.menubar)
-        self.menuFile.setObjectName(_fromUtf8("menuFile"))
+        self.menubar.setObjectName("menubar")
+        self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.actionPrint_Current_Table = QtGui.QAction(MainWindow)
-        self.actionPrint_Current_Table.setObjectName(_fromUtf8("actionPrint_Current_Table"))
-        self.actionBack = QtGui.QAction(MainWindow)
-        self.actionBack.setObjectName(_fromUtf8("actionBack"))
+        self.actionPrint_Current_Table = QtWidgets.QAction(MainWindow)
+        self.actionPrint_Current_Table.setObjectName("actionPrint_Current_Table")
+        self.actionBack = QtWidgets.QAction(MainWindow)
+        self.actionBack.setObjectName("actionBack")
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionPrint_Current_Table)
         self.menuFile.addAction(self.actionBack)
@@ -198,7 +192,7 @@ class Ui_MainWindow(object):
             self.log_headers = ['Model_Name' , 'Time' , 'Amount' ,'Reason']
             self.log.setHorizontalHeaderLabels(self.log_headers)
             for i in range(0,len(self.log_data)):
-                data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.log_data[i] ]
+                data_widgets = [QtWidgets.QTableWidgetItem(str(j)) for j in self.log_data[i] ]
                 for j,k in enumerate(data_widgets):
                     self.log.setItem(i,j,k)
 
@@ -226,7 +220,7 @@ class Ui_MainWindow(object):
         self.name_table.itemSelectionChanged.connect(self.update_details)
         self.name_table.itemActivated.connect(self.foo)
         for i in range(0,len(self.models_data)):
-            data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.models_data[i] ]
+            data_widgets = [QtWidgets.QTableWidgetItem(str(j)) for j in self.models_data[i] ]
             for j,k in enumerate(data_widgets):
                 self.name_table.setItem(i,j,k)
         self.update()
@@ -264,7 +258,7 @@ class Ui_MainWindow(object):
         self.log_headers = ['Model_Name' , 'Time' , 'Amount' ,'Reason']
         self.log.setHorizontalHeaderLabels(self.log_headers)
         for i in range(0,len(self.log_data)):
-            data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.log_data[i] ]
+            data_widgets = [QtWidgets.QTableWidgetItem(str(j)) for j in self.log_data[i] ]
             for j,k in enumerate(data_widgets):
                 self.log.setItem(i,j,k)
 
@@ -287,7 +281,7 @@ class Ui_MainWindow(object):
         self.name_table.setColumnCount(len(self.models_data[0]))
         self.name_table.setHorizontalHeaderLabels(['Model_Name'])
         for i in range(0,len(self.models_data)):
-            data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.models_data[i] ]
+            data_widgets = [QtWidgets.QTableWidgetItem(str(j)) for j in self.models_data[i] ]
             for j,k in enumerate(data_widgets):
                 self.name_table.setItem(i,j,k)
         self.add_for.clear()
@@ -339,7 +333,7 @@ class Ui_MainWindow(object):
         self.name_table.setRowCount(0)
         self.name_table.setRowCount(len(self.models_data))
         for i in range(0,len(self.models_data)):
-            data_widgets = [QtGui.QTableWidgetItem(str(j)) for j in self.models_data[i] ]
+            data_widgets = [QtWidgets.QTableWidgetItem(str(j)) for j in self.models_data[i] ]
             for j,k in enumerate(data_widgets):
                 self.name_table.setItem(i,j,k)
 
@@ -348,8 +342,8 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()

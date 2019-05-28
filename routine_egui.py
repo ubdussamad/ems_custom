@@ -7,7 +7,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtPrintSupport, QtWidgets
 from ems_core import *
 from recipt_genrator import *
 some = ems_core('ems','admin')
@@ -19,30 +19,25 @@ import os
 GRAND_TOTAL_AMOUNT_FOR_SESSION = 0
 LAST_SALE_AMOUNT = 0
 try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QtWidgets.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QtCore.QCoreApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QtCore.QCoreApplication.translate(context, text, disambig)
 
-class Printer(QtGui.QDialog):
+class Printer(QtWidgets.QDialog):
     def __init__(self):
         super(Printer, self).__init__()
         self.setWindowTitle('Recipt Preview')
         self.resize(1030, 629)
-        self.editor = QtGui.QTextEdit(self)
+        self.editor = QtWidgets.QTextEdit(self)
         self.editor.textChanged.connect(self.handleTextChanged)
-        self.buttonPrint = QtGui.QPushButton('Print', self)
+        self.buttonPrint = QtWidgets.QPushButton('Print', self)
         self.buttonPrint.clicked.connect(self.handlePrint)
-        self.buttonPreview = QtGui.QPushButton('Preview', self)
+        self.buttonPreview = QtWidgets.QPushButton('Preview', self)
         self.buttonPreview.clicked.connect(self.handlePreview)
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
         layout.addWidget(self.editor, 0, 0, 1, 3)
         self.handleOpen(os.path.abspath("recipt.html"))
         layout.addWidget(self.buttonPrint, 1, 0)
@@ -63,12 +58,12 @@ class Printer(QtGui.QDialog):
                 file.close()
 
     def handlePrint(self):
-        dialog = QtGui.QPrintDialog()
-        if dialog.exec_() == QtGui.QDialog.Accepted:
+        dialog = QtPrintSupport.QPrintDialog()
+        if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.editor.document().print_(dialog.printer())
 
     def handlePreview(self):
-        dialog = QtGui.QPrintPreviewDialog()
+        dialog = QtPrintSupport.QPrintPreviewDialog()
         dialog.paintRequested.connect(self.editor.print_)
         dialog.exec_()
 
@@ -181,9 +176,9 @@ class Ui_EMS(object):
             ivn_qty  = ivn_qty[0][1]
             amt = self.cart.item(i,1).text()
             if float(ivn_qty) < float(amt):
-                reply = QtGui.QMessageBox.question(self.centralwidget, "Inventory Contradiction", 
-                 "Only %.2fKgs of %s is left in the inventory, Continue ?"%(float(ivn_qty),p_id), QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
-                if reply == QtGui.QMessageBox.Yes:
+                reply = QtWidgets.QMessageBox.question(self.centralwidget, "Inventory Contradiction", 
+                 "Only %.2fKgs of %s is left in the inventory, Continue ?"%(float(ivn_qty),p_id), QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+                if reply == QtWidgets.QMessageBox.Yes:
                     pass
                 else:
                     amt = ivn_qty
@@ -202,17 +197,17 @@ class Ui_EMS(object):
         self.cart_table_headers = ['Product_id','Qty','Unit','Rate/Unit','Tax Amount','Total Amount']# Ulta crude scaling technique
         self.cart.setHorizontalHeaderLabels(self.cart_table_headers)
         for i in range(0,self.cart_length):
-            p_id = QtGui.QTableWidgetItem(str(self.cart_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem(str(self.cart_tuple[i][1]))
-            unit = QtGui.QTableWidgetItem(str(self.cart_tuple[i][2]))
-            rate = QtGui.QTableWidgetItem(str(self.cart_tuple[i][3]))
+            p_id = QtWidgets.QTableWidgetItem(str(self.cart_tuple[i][0]))
+            qty = QtWidgets.QTableWidgetItem(str(self.cart_tuple[i][1]))
+            unit = QtWidgets.QTableWidgetItem(str(self.cart_tuple[i][2]))
+            rate = QtWidgets.QTableWidgetItem(str(self.cart_tuple[i][3]))
             tmp = float(self.cart_tuple[i][1])*float(self.cart_tuple[i][3])
             tax_percentage = float(self.cart_tuple[i][4])/100
             tax_amount = tmp*tax_percentage if not ttype else 0
             tmp += tax_amount
             self.total_amount += tmp
-            amount = QtGui.QTableWidgetItem('%.2f'%tmp)
-            tax = QtGui.QTableWidgetItem('%.2f'%tax_amount)
+            amount = QtWidgets.QTableWidgetItem('%.2f'%tmp)
+            tax = QtWidgets.QTableWidgetItem('%.2f'%tax_amount)
             self.cart.setItem(i,0,p_id)
             self.cart.setItem(i,1,qty)
             self.cart.setItem(i,2,unit)
@@ -239,13 +234,13 @@ class Ui_EMS(object):
         self.ivn_length = len(self.ivn_tuple)
         self.ivn.setRowCount(self.ivn_length)
         for i in range(0,self.ivn_length):
-            p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
-            unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
-            rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
-            desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
-            tax = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][5]))
-            hsc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][6]))
+            p_id = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][0]))
+            qty = QtWidgets.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
+            unit = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][2]))
+            rate = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][3]))
+            desc = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][4]))
+            tax = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][5]))
+            hsc = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][6]))
             self.ivn.setItem(i,0,p_id)
             self.ivn.setItem(i,1,qty)
             self.ivn.setItem(i,2,unit)
@@ -281,18 +276,18 @@ class Ui_EMS(object):
             self.cart.setHorizontalHeaderLabels(self.cart_table_headers)
 
             for i in range(0,self.cart_length):
-                p_id = QtGui.QTableWidgetItem(str(self.cart_tuple[i][0]))
-                qty = QtGui.QTableWidgetItem('%.2f'%float(self.cart_tuple[i][1]))
-                unit = QtGui.QTableWidgetItem(str(self.cart_tuple[i][2]))
-                rate = QtGui.QTableWidgetItem(str(self.cart_tuple[i][3]))
+                p_id = QtWidgets.QTableWidgetItem(str(self.cart_tuple[i][0]))
+                qty = QtWidgets.QTableWidgetItem('%.2f'%float(self.cart_tuple[i][1]))
+                unit = QtWidgets.QTableWidgetItem(str(self.cart_tuple[i][2]))
+                rate = QtWidgets.QTableWidgetItem(str(self.cart_tuple[i][3]))
                 tmp = float(self.cart_tuple[i][1])*float(self.cart_tuple[i][3])
 
                 tax_percentage = float(self.cart_tuple[i][4])/100
                 tax_amount = tmp * tax_percentage if not ttype else 0
                 self.total_amount += tmp + tax_amount if not ttype else 0 #Updated for kaccha
                 tmp += tax_amount if not ttype else 0
-                amount = QtGui.QTableWidgetItem('%.2f'%tmp)
-                tax_amount = QtGui.QTableWidgetItem('%.2f'%tax_amount)
+                amount = QtWidgets.QTableWidgetItem('%.2f'%tmp)
+                tax_amount = QtWidgets.QTableWidgetItem('%.2f'%tax_amount)
                 self.cart.setItem(i,0,p_id)
                 self.cart.setItem(i,1,qty)
                 self.cart.setItem(i,2,unit)
@@ -318,33 +313,33 @@ class Ui_EMS(object):
         #\
         #    (self.cart.item(index,0).text(),table[table.index(self.cart.item(index,0).text())][7]))
     def setupUi(self, EMS):
-        EMS.setObjectName(_fromUtf8("EMS"))
+        EMS.setObjectName("EMS")
         EMS.resize(1030, 629)
         EMS.setSizeIncrement(QtCore.QSize(19, 567))
-        EMS.setWindowFilePath(_fromUtf8(""))
-        self.centralwidget = QtGui.QWidget(EMS)
-        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.gridLayout_4 = QtGui.QGridLayout(self.centralwidget)
-        self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
-        self.verticalLayout_6 = QtGui.QVBoxLayout()
-        self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
-        self.label = QtGui.QLabel(self.centralwidget)
+        EMS.setWindowFilePath("")
+        self.centralwidget = QtWidgets.QWidget(EMS)
+        self.centralwidget.setObjectName("centralwidget")
+        self.gridLayout_4 = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.label.setObjectName(_fromUtf8("label"))
+        self.label.setObjectName("label")
         self.verticalLayout_6.addWidget(self.label)
 
-        deleteShortcut = QtGui.QShortcut(QtGui.QKeySequence('Esc'),self.centralwidget)
+        deleteShortcut = QtWidgets.QShortcut(QtGui.QKeySequence('Esc'),self.centralwidget)
         try:
             deleteShortcut.activated.connect(self.ret_login)
         except:
             print("Unit-Testing Mode")
 
-        self.horizontalLayout6 = QtGui.QHBoxLayout()
-        self.horizontalLayout6.setObjectName(_fromUtf8("Search Horizontal Layout"))
+        self.horizontalLayout6 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout6.setObjectName("Search Horizontal Layout")
         
-        self.ivn_sb = QtGui.QLineEdit(self.centralwidget)
-        self.ivn_sb.setObjectName(_fromUtf8("ivn_sb"))
-        self.ivn_search_key_select = QtGui.QComboBox(self.centralwidget)
+        self.ivn_sb = QtWidgets.QLineEdit(self.centralwidget)
+        self.ivn_sb.setObjectName("ivn_sb")
+        self.ivn_search_key_select = QtWidgets.QComboBox(self.centralwidget)
         self.ivn_search_key_select.addItem('Product Name')
         self.ivn_search_key_select.addItem('HSN/SAC')
         self.horizontalLayout6.addWidget(self.ivn_sb)
@@ -355,10 +350,10 @@ class Ui_EMS(object):
 
         self.ivn_sb.textChanged.connect(lambda x:self.query_ivn(self.ivn_sb.text()))
 
-        self.ivn = QtGui.QTableWidget(self.centralwidget)
-        self.ivn.setObjectName(_fromUtf8("ivn"))
+        self.ivn = QtWidgets.QTableWidget(self.centralwidget)
+        self.ivn.setObjectName("ivn")
         self.ivn.setColumnCount(7)
-        self.ivn.setObjectName(_fromUtf8("ivn"))
+        self.ivn.setObjectName("ivn")
         self.table_headers = ['Product_id'+' '*15,'Qty','Unit','Rate/Unit','Description','Tax','HSN/SAC']# Ulta crude scaling technique
         self.ivn.setHorizontalHeaderLabels(self.table_headers)
         self.ivn_tuple = some.display_ivn()
@@ -369,8 +364,8 @@ class Ui_EMS(object):
         self.ivn.horizontalHeader().setSortIndicatorShown(True)
         self.ivn.horizontalHeader().setStretchLastSection(True)
         self.ivn.verticalHeader().setSortIndicatorShown(True)
-        self.ivn.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.ivn.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.ivn.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.ivn.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ivn.setTextElideMode(QtCore.Qt.ElideRight)
         self.ivn.setGridStyle(QtCore.Qt.NoPen)
         #self.ivn.itemClicked.connect(self.append_to_cart)
@@ -381,13 +376,13 @@ class Ui_EMS(object):
         self.ivn_length = len(self.ivn_tuple)
         self.ivn.setRowCount(self.ivn_length)
         for i in range(0,self.ivn_length):
-            p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
-            unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
-            rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
-            desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
-            tax = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][5]))
-            hsc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][6]))
+            p_id = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][0]))
+            qty = QtWidgets.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
+            unit = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][2]))
+            rate = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][3]))
+            desc = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][4]))
+            tax = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][5]))
+            hsc = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][6]))
             self.ivn.setItem(i,0,p_id)
             self.ivn.setItem(i,1,qty)
             self.ivn.setItem(i,2,unit)
@@ -397,81 +392,81 @@ class Ui_EMS(object):
             self.ivn.setItem(i,6,hsc)
 
         self.verticalLayout_6.addWidget(self.ivn)
-        self.verticalLayout_5 = QtGui.QVBoxLayout()
-        self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.label_7 = QtGui.QLabel(self.centralwidget)
-        self.label_7.setObjectName(_fromUtf8("label_7"))
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label_7 = QtWidgets.QLabel(self.centralwidget)
+        self.label_7.setObjectName("label_7")
         self.horizontalLayout.addWidget(self.label_7)
-        self.time_label = QtGui.QLabel(self.centralwidget)
-        self.time_label.setObjectName(_fromUtf8("time_label"))
+        self.time_label = QtWidgets.QLabel(self.centralwidget)
+        self.time_label.setObjectName("time_label")
         self.horizontalLayout.addWidget(self.time_label)
         self.verticalLayout_5.addLayout(self.horizontalLayout)
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.label_8 = QtGui.QLabel(self.centralwidget)
-        self.label_8.setObjectName(_fromUtf8("label_8"))
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.label_8 = QtWidgets.QLabel(self.centralwidget)
+        self.label_8.setObjectName("label_8")
         self.horizontalLayout_2.addWidget(self.label_8)
-        self.user_label = QtGui.QLabel(self.centralwidget)
-        self.user_label.setObjectName(_fromUtf8("user_label"))
+        self.user_label = QtWidgets.QLabel(self.centralwidget)
+        self.user_label.setObjectName("user_label")
         self.horizontalLayout_2.addWidget(self.user_label)
         self.verticalLayout_5.addLayout(self.horizontalLayout_2)
-        self.horizontalLayout_3 = QtGui.QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
-        self.label_9 = QtGui.QLabel(self.centralwidget)
-        self.label_9.setObjectName(_fromUtf8("label_9"))
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.label_9 = QtWidgets.QLabel(self.centralwidget)
+        self.label_9.setObjectName("label_9")
         self.horizontalLayout_3.addWidget(self.label_9)
-        self.garbage = QtGui.QLabel(self.centralwidget)
-        self.garbage.setObjectName(_fromUtf8("garbage"))
+        self.garbage = QtWidgets.QLabel(self.centralwidget)
+        self.garbage.setObjectName("garbage")
         self.horizontalLayout_3.addWidget(self.garbage)
         self.verticalLayout_5.addLayout(self.horizontalLayout_3)
         self.verticalLayout_6.addLayout(self.verticalLayout_5)
         self.gridLayout_4.addLayout(self.verticalLayout_6, 0, 0, 1, 1)
-        self.verticalLayout = QtGui.QVBoxLayout()
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.gridLayout = QtGui.QGridLayout()
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.label_2 = QtGui.QLabel(self.centralwidget)
-        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
 
         #Customer Selection box
-        self.comboBox = QtGui.QComboBox(self.centralwidget)
-        self.comboBox.setObjectName(_fromUtf8("comboBox"))
+        self.comboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox.setObjectName("comboBox")
         self.comboBox.clear()
         for text in some.display_all_customers():
             self.comboBox.addItem(text[0])
         self.comboBox.currentIndexChanged.connect(self.customer_change)
 
         self.gridLayout.addWidget(self.comboBox, 0, 1, 1, 1)
-        self.label_3 = QtGui.QLabel(self.centralwidget)
-        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
         #Customer Name Label
-        self.c_name = QtGui.QLabel(self.centralwidget)
-        self.c_name.setObjectName(_fromUtf8("c_name"))
+        self.c_name = QtWidgets.QLabel(self.centralwidget)
+        self.c_name.setObjectName("c_name")
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
         self.c_name.setFont(font)
 
         self.gridLayout.addWidget(self.c_name, 1, 1, 1, 1)
-        self.label_5 = QtGui.QLabel(self.centralwidget)
-        self.label_5.setObjectName(_fromUtf8("label_5"))
+        self.label_5 = QtWidgets.QLabel(self.centralwidget)
+        self.label_5.setObjectName("label_5")
         self.gridLayout.addWidget(self.label_5, 2, 0, 1, 1)
 
         #Due display label
-        self.due_label = QtGui.QLabel(self.centralwidget)
-        self.due_label.setObjectName(_fromUtf8("due_label"))
+        self.due_label = QtWidgets.QLabel(self.centralwidget)
+        self.due_label.setObjectName("due_label")
         self.gridLayout.addWidget(self.due_label, 2, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         #Cart Routine
-        self.cart = QtGui.QTableWidget(self.centralwidget) #CART ROUTINE
-        self.cart.setObjectName(_fromUtf8("cart"))
+        self.cart = QtWidgets.QTableWidget(self.centralwidget) #CART ROUTINE
+        self.cart.setObjectName("cart")
         self.cart.setAlternatingRowColors(True)
-        self.cart.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.cart.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.cart.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.cart.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.cart.setTextElideMode(QtCore.Qt.ElideRight)
         self.cart.setGridStyle(QtCore.Qt.NoPen)
         self.cart.itemClicked.connect(lambda x: self.update_cart_with_amount(self.__get_ttype()))
@@ -483,87 +478,87 @@ class Ui_EMS(object):
         self.verticalLayout.addWidget(self.cart)
 
         #Shortcuts testing utility
-        deleteShortcut = QtGui.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Delete),self.cart)
+        deleteShortcut = QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Delete),self.cart)
         deleteShortcut.activated.connect(self.delete_selected_cart_item)
 
-        self.horizontalLayout_5 = QtGui.QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
-        self.label_6 = QtGui.QLabel(self.centralwidget)
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.label_6 = QtWidgets.QLabel(self.centralwidget)
         self.label_6.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.label_6.setObjectName(_fromUtf8("label_6"))
+        self.label_6.setObjectName("label_6")
         self.horizontalLayout_5.addWidget(self.label_6)
-        self.total_amt = QtGui.QLabel(self.centralwidget)
+        self.total_amt = QtWidgets.QLabel(self.centralwidget)
         self.total_amt.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.total_amt.setObjectName(_fromUtf8("total_amt"))
+        self.total_amt.setObjectName("total_amt")
         self.horizontalLayout_5.addWidget(self.total_amt)
         self.verticalLayout.addLayout(self.horizontalLayout_5)
-        self.horizontalLayout_4 = QtGui.QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
 
         #Clear item button
-        self.clear_item = QtGui.QPushButton(self.centralwidget)
-        self.clear_item.setObjectName(_fromUtf8("clear_item"))
+        self.clear_item = QtWidgets.QPushButton(self.centralwidget)
+        self.clear_item.setObjectName("clear_item")
         self.clear_item.clicked.connect(self.delete_selected_cart_item)
         self.horizontalLayout_4.addWidget(self.clear_item)
 
         #Cart Clearing button
-        self.clear_cart = QtGui.QPushButton(self.centralwidget)
-        self.clear_cart.setObjectName(_fromUtf8("clear_cart"))
+        self.clear_cart = QtWidgets.QPushButton(self.centralwidget)
+        self.clear_cart.setObjectName("clear_cart")
         self.clear_cart.clicked.connect(self.clear_cart_routine)
         self.horizontalLayout_4.addWidget(self.clear_cart)
 
         #Update  button
-        self.update = QtGui.QPushButton(self.centralwidget)
-        self.update.setObjectName(_fromUtf8("update"))
+        self.update = QtWidgets.QPushButton(self.centralwidget)
+        self.update.setObjectName("update")
         self.update.clicked.connect(lambda x:self.update_cart_with_amount(self.__get_ttype()))
 
 
         self.horizontalLayout_4.addWidget(self.update)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.gridLayout_4.addLayout(self.verticalLayout, 0, 1, 1, 1)
-        self.gridLayout_3 = QtGui.QGridLayout()
-        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
-        self.gridLayout_2 = QtGui.QGridLayout()
-        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
-        self.label_4 = QtGui.QLabel(self.centralwidget)
+        self.gridLayout_3 = QtWidgets.QGridLayout()
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.gridLayout_2 = QtWidgets.QGridLayout()
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
         self.label_4.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
-        self.label_4.setObjectName(_fromUtf8("label_4"))
+        self.label_4.setObjectName("label_4")
         self.gridLayout_2.addWidget(self.label_4, 0, 0, 1, 1)
-        self.radioButton_2 = QtGui.QRadioButton(self.centralwidget)
-        self.radioButton_2.setObjectName(_fromUtf8("radioButton_2"))
+        self.radioButton_2 = QtWidgets.QRadioButton(self.centralwidget)
+        self.radioButton_2.setObjectName("radioButton_2")
         self.gridLayout_2.addWidget(self.radioButton_2, 1, 0, 1, 1)
-        self.radioButton = QtGui.QRadioButton(self.centralwidget)
-        self.radioButton.setObjectName(_fromUtf8("radioButton"))
+        self.radioButton = QtWidgets.QRadioButton(self.centralwidget)
+        self.radioButton.setObjectName("radioButton")
         self.gridLayout_2.addWidget(self.radioButton, 2, 0, 1, 1)
         self.gridLayout_3.addLayout(self.gridLayout_2, 0, 0, 1, 1)
-        self.verticalLayout_2 = QtGui.QVBoxLayout()
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         #Checkout button current
-        self.chk_out = QtGui.QPushButton(self.centralwidget)
-        self.chk_out.setObjectName(_fromUtf8("chk_out"))
+        self.chk_out = QtWidgets.QPushButton(self.centralwidget)
+        self.chk_out.setObjectName("chk_out")
         self.chk_out.clicked.connect(self.normal_checkout)
 
         self.verticalLayout_2.addWidget(self.chk_out)
 
         #Checkout DUE
-        self.due_self = QtGui.QPushButton(self.centralwidget)
-        self.due_self.setObjectName(_fromUtf8("due_self"))
+        self.due_self = QtWidgets.QPushButton(self.centralwidget)
+        self.due_self.setObjectName("due_self")
         self.due_self.clicked.connect(self.borrow_checkout)
 
         self.verticalLayout_2.addWidget(self.due_self)
-        self.print_recipt = QtGui.QPushButton(self.centralwidget)
+        self.print_recipt = QtWidgets.QPushButton(self.centralwidget)
         #Print Recipt Button
-        self.print_recipt.setObjectName(_fromUtf8("print_recipt"))
+        self.print_recipt.setObjectName("print_recipt")
         self.verticalLayout_2.addWidget(self.print_recipt)
         self.print_recipt.clicked.connect(self.print_recipt_routine)
         self.print_recipt.setEnabled(False)
-        self.clr = QtGui.QPushButton(self.centralwidget)
-        self.clr.setObjectName(_fromUtf8("clr"))
+        self.clr = QtWidgets.QPushButton(self.centralwidget)
+        self.clr.setObjectName("clr")
         self.clr.clicked.connect(self.clear_cart_routine)
         #########################################
         self.verticalLayout_2.addWidget(self.clr)
-        self.exit = QtGui.QPushButton(self.centralwidget)
-        self.exit.setObjectName(_fromUtf8("exit"))
+        self.exit = QtWidgets.QPushButton(self.centralwidget)
+        self.exit.setObjectName("exit")
         try:
             self.exit.clicked.connect(self.ret_login)
         except:
@@ -572,8 +567,8 @@ class Ui_EMS(object):
         self.gridLayout_3.addLayout(self.verticalLayout_2, 1, 0, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_3, 0, 2, 1, 1)
         EMS.setCentralWidget(self.centralwidget)
-        self.statusbar = QtGui.QStatusBar(EMS)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        self.statusbar = QtWidgets.QStatusBar(EMS)
+        self.statusbar.setObjectName("statusbar")
         EMS.setStatusBar(self.statusbar)
 
         self.retranslateUi(EMS)
@@ -611,14 +606,14 @@ class Ui_EMS(object):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
-    EMS = QtGui.QMainWindow()
+    app = QtWidgets.QApplication(sys.argv)
+    EMS = QtWidgets.QMainWindow()
     ui = Ui_EMS()
     ui.setupUi(EMS)
     EMS.show()
     sys.exit(app.exec_())
 else:
-    class routine_window(QtGui.QMainWindow, Ui_EMS):
+    class routine_window(QtWidgets.QMainWindow, Ui_EMS):
         closed = QtCore.pyqtSignal()
         ret = QtCore.pyqtSignal()
         def ret_login(self):

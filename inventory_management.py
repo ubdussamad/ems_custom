@@ -6,23 +6,17 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 from ems_core import *
 import time
 some = ems_core('ems','admin')
 try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QtWidgets.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QtCore.QCoreApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QtCore.QCoreApplication.translate(context, text, disambig)
 
 class Ui_MainWindow(object):
     def mod_product_routine(self):
@@ -47,7 +41,7 @@ class Ui_MainWindow(object):
         except Exception as err:
             print(err)
             self.label_7.setText(_translate("MainWindow", "Data not valid, select row again and try!", None))
-            self.label_7.setStyleSheet(_fromUtf8("color:red;"))
+            self.label_7.setStyleSheet("color:red;")
             return
         data = data+[p_id]
         if data[0]:
@@ -137,12 +131,12 @@ class Ui_MainWindow(object):
         unit = 'Enter Unit'
         rate = 'Enter Rate'
         desc = 'Enter Description'
-        p_id = QtGui.QTableWidgetItem(p_id)
-        qty = QtGui.QTableWidgetItem(qty)
-        unit = QtGui.QTableWidgetItem(unit)
-        rate = QtGui.QTableWidgetItem(rate)
-        desc = QtGui.QTableWidgetItem(desc)
-        tax = QtGui.QTableWidgetItem('Tax')
+        p_id = QtWidgets.QTableWidgetItem(p_id)
+        qty = QtWidgets.QTableWidgetItem(qty)
+        unit = QtWidgets.QTableWidgetItem(unit)
+        rate = QtWidgets.QTableWidgetItem(rate)
+        desc = QtWidgets.QTableWidgetItem(desc)
+        tax = QtWidgets.QTableWidgetItem('Tax')
         self.ivn.setItem(index,0,p_id)
         self.ivn.setItem(index,1,qty)
         self.ivn.setItem(index,2,unit)
@@ -157,9 +151,9 @@ class Ui_MainWindow(object):
             return
         index = indexes[0]
         p_id = self.ivn.item(index,0).text()
-        reply = QtGui.QMessageBox.question(self.centralwidget, 'Delete Item %s from Inventory??'%p_id.upper(), 
-                 'Are you sure? \nIf you delete this item %s, all it\'s data will be lost!'%p_id.upper(), QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
-        if reply == QtGui.QMessageBox.Yes:
+        reply = QtWidgets.QMessageBox.question(self.centralwidget, 'Delete Item %s from Inventory??'%p_id.upper(), 
+                 'Are you sure? \nIf you delete this item %s, all it\'s data will be lost!'%p_id.upper(), QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+        if reply == QtWidgets.QMessageBox.Yes:
             if indexes:
                 self.ivn.removeRow(index)
                 some.imm.delete(p_id)
@@ -177,14 +171,14 @@ class Ui_MainWindow(object):
         self.ivn_length = len(self.ivn_tuple)
         self.ivn.setRowCount(self.ivn_length)
         for i in range(0,self.ivn_length):
-            p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
-            unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
-            rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
-            desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
-            tax = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][5]))
-            hsn = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][6]))
-            stkp = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][7]))
+            p_id = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][0]))
+            qty = QtWidgets.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
+            unit = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][2]))
+            rate = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][3]))
+            desc = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][4]))
+            tax = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][5]))
+            hsn = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][6]))
+            stkp = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][7]))
             self.ivn.setItem(i,0,p_id)
             self.ivn.setItem(i,1,qty)
             self.ivn.setItem(i,2,unit)
@@ -209,46 +203,46 @@ class Ui_MainWindow(object):
         self.brate.setPlaceholderText(_translate("MainWindow", brate, None))
         self.tax.setPlaceholderText(_translate("MainWindow", tax, None))
         self.label_7.setText(_translate("MainWindow", "Edit:    %s || Taxed Rate %.3f"% (p_id,(1+(float(tax)/100))*float(rate)), None))
-        self.label_7.setStyleSheet(_fromUtf8("font-weight: bold;"))
+        self.label_7.setStyleSheet("font-weight: bold;")
         self.label_7.setAlignment(QtCore.Qt.AlignCenter)
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.setObjectName("MainWindow")
         MainWindow.resize(706, 538)
-        self.centralwidget = QtGui.QWidget(MainWindow)
-        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        deleteShortcut = QtGui.QShortcut(QtGui.QKeySequence('Esc'),self.centralwidget)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        deleteShortcut = QtWidgets.QShortcut(QtGui.QKeySequence('Esc'),self.centralwidget)
         try:
             deleteShortcut.activated.connect(self.ret_login)
         except:
             print("Unit Testing Mode")
-        self.verticalLayout_3 = QtGui.QVBoxLayout(self.centralwidget)
-        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
-        self.verticalLayout_2 = QtGui.QVBoxLayout()
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.label = QtGui.QLabel(self.centralwidget)
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.label = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
         self.label.setFont(font)
-        self.label.setObjectName(_fromUtf8("label"))
+        self.label.setObjectName("label")
         self.verticalLayout_2.addWidget(self.label)
-        self.verticalLayout = QtGui.QVBoxLayout()
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
 
         #Search bar
-        self.ivn_search = QtGui.QLineEdit(self.centralwidget)
-        self.ivn_search.setObjectName(_fromUtf8("ivn_search"))
+        self.ivn_search = QtWidgets.QLineEdit(self.centralwidget)
+        self.ivn_search.setObjectName("ivn_search")
         self.ivn_search.textChanged.connect(lambda x:self.query_ivn(self.ivn_search.text()))
         self.verticalLayout.addWidget(self.ivn_search)
 
         # Ivn table
-        self.ivn = QtGui.QTableWidget(self.centralwidget)
-        self.ivn.setObjectName(_fromUtf8("ivn"))
+        self.ivn = QtWidgets.QTableWidget(self.centralwidget)
+        self.ivn.setObjectName("ivn")
         self.ivn.setAlternatingRowColors(True)
-        self.ivn.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.ivn.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.ivn.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.ivn.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ivn.setTextElideMode(QtCore.Qt.ElideRight)
         self.ivn.setGridStyle(QtCore.Qt.NoPen)
         self.ivn.itemClicked.connect(self.update_fourm)
@@ -261,14 +255,14 @@ class Ui_MainWindow(object):
         'Description','Tax','HSN/SAC','Bought Rate']# Ulta crude scaling technique
         self.ivn.setHorizontalHeaderLabels(self.ivn_table_headers)
         for i in range(0,self.ivn_length):
-            p_id = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][0]))
-            qty = QtGui.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
-            unit = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][2]))
-            rate = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][3]))
-            desc = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][4]))
-            tax = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][5]))
-            hsn = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][6]))
-            stkp = QtGui.QTableWidgetItem(str(self.ivn_tuple[i][7]))
+            p_id = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][0]))
+            qty = QtWidgets.QTableWidgetItem('%.2f'%float(self.ivn_tuple[i][1]))
+            unit = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][2]))
+            rate = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][3]))
+            desc = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][4]))
+            tax = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][5]))
+            hsn = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][6]))
+            stkp = QtWidgets.QTableWidgetItem(str(self.ivn_tuple[i][7]))
             self.ivn.setItem(i,0,p_id)
             self.ivn.setItem(i,1,qty)
             self.ivn.setItem(i,2,unit)
@@ -283,80 +277,80 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.ivn)
         self.verticalLayout_2.addLayout(self.verticalLayout)
         self.verticalLayout_3.addLayout(self.verticalLayout_2)
-        self.label_7 = QtGui.QLabel(self.centralwidget)
-        self.label_7.setObjectName(_fromUtf8("label_7"))
+        self.label_7 = QtWidgets.QLabel(self.centralwidget)
+        self.label_7.setObjectName("label_7")
         self.verticalLayout_3.addWidget(self.label_7)
-        self.gridLayout = QtGui.QGridLayout()
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.label_2 = QtGui.QLabel(self.centralwidget)
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
-        self.label_3 = QtGui.QLabel(self.centralwidget)
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 0, 1, 1, 1)
-        self.label_4 = QtGui.QLabel(self.centralwidget)
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
         self.label_4.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_4.setObjectName(_fromUtf8("label_4"))
+        self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 0, 2, 1, 1)
-        self.label_5 = QtGui.QLabel(self.centralwidget)
+        self.label_5 = QtWidgets.QLabel(self.centralwidget)
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_5.setObjectName(_fromUtf8("label_5"))
+        self.label_5.setObjectName("label_5")
         self.gridLayout.addWidget(self.label_5, 0, 3, 1, 1)
-        self.label_6 = QtGui.QLabel(self.centralwidget)
-        self.label_6.setObjectName(_fromUtf8("label_6"))
+        self.label_6 = QtWidgets.QLabel(self.centralwidget)
+        self.label_6.setObjectName("label_6")
         self.gridLayout.addWidget(self.label_6, 0, 4, 1, 1)
         # Qty edit
-        self.qty = QtGui.QLineEdit(self.centralwidget)
-        self.qty.setObjectName(_fromUtf8("qty"))
+        self.qty = QtWidgets.QLineEdit(self.centralwidget)
+        self.qty.setObjectName("qty")
         self.gridLayout.addWidget(self.qty, 1, 0, 1, 1)
         # Rate edit
-        self.rate = QtGui.QLineEdit(self.centralwidget)
-        self.rate.setObjectName(_fromUtf8("rate"))
+        self.rate = QtWidgets.QLineEdit(self.centralwidget)
+        self.rate.setObjectName("rate")
         self.gridLayout.addWidget(self.rate, 1, 1, 1, 1)
         # Tax edit
-        self.tax = QtGui.QLineEdit(self.centralwidget)
-        self.tax.setObjectName(_fromUtf8("tax"))
+        self.tax = QtWidgets.QLineEdit(self.centralwidget)
+        self.tax.setObjectName("tax")
         self.gridLayout.addWidget(self.tax, 1, 2, 1, 1)
         # Bought rate edit
-        self.brate = QtGui.QLineEdit(self.centralwidget)
-        self.brate.setObjectName(_fromUtf8("brate"))
+        self.brate = QtWidgets.QLineEdit(self.centralwidget)
+        self.brate.setObjectName("brate")
         self.gridLayout.addWidget(self.brate, 1, 3, 1, 1)
         # Item modification button
-        self.append = QtGui.QPushButton(self.centralwidget)
-        self.append.setObjectName(_fromUtf8("append"))
+        self.append = QtWidgets.QPushButton(self.centralwidget)
+        self.append.setObjectName("append")
         self.append.clicked.connect(self.mod_product_routine)
         self.gridLayout.addWidget(self.append, 1, 4, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
 
         # Add inventory button
-        self.add_ivn = QtGui.QPushButton(self.centralwidget)
-        self.add_ivn.setStyleSheet(_fromUtf8("color:\"green\""))
-        self.add_ivn.setObjectName(_fromUtf8("add_ivn"))
+        self.add_ivn = QtWidgets.QPushButton(self.centralwidget)
+        self.add_ivn.setStyleSheet("color:\"green\"")
+        self.add_ivn.setObjectName("add_ivn")
         self.add_ivn.clicked.connect(self.add_new)
         self.horizontalLayout.addWidget(self.add_ivn)
 
         # Update ivn button
-        self.update_ivn = QtGui.QPushButton(self.centralwidget)
-        self.update_ivn.setStyleSheet(_fromUtf8("color: rgb(85, 170, 255);"))
-        self.update_ivn.setObjectName(_fromUtf8("update_ivn"))
+        self.update_ivn = QtWidgets.QPushButton(self.centralwidget)
+        self.update_ivn.setStyleSheet("color: rgb(85, 170, 255);")
+        self.update_ivn.setObjectName("update_ivn")
         self.update_ivn.clicked.connect(self.update_ivn_routine)
         self.horizontalLayout.addWidget(self.update_ivn)
 
 
         # Delete item button
-        self.del_item = QtGui.QPushButton(self.centralwidget)
-        self.del_item.setStyleSheet(_fromUtf8("color: \'dark red\'"))
-        self.del_item.setObjectName(_fromUtf8("del_item"))
+        self.del_item = QtWidgets.QPushButton(self.centralwidget)
+        self.del_item.setStyleSheet("color: \'dark red\'")
+        self.del_item.setObjectName("del_item")
         self.del_item.clicked.connect(self.del_item_routine)
         self.horizontalLayout.addWidget(self.del_item)
 
         # Back button
-        self.back = QtGui.QPushButton(self.centralwidget)
-        self.back.setObjectName(_fromUtf8("back"))
+        self.back = QtWidgets.QPushButton(self.centralwidget)
+        self.back.setObjectName("back")
         try:
             self.back.clicked.connect(self.ret_login)
         except:
@@ -364,22 +358,22 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.back)
 
         # Edit tac check box
-        self.etax = QtGui.QCheckBox(self.centralwidget)
-        self.etax.setObjectName(_fromUtf8("etax"))
+        self.etax = QtWidgets.QCheckBox(self.centralwidget)
+        self.etax.setObjectName("etax")
         self.horizontalLayout.addWidget(self.etax)
 
         #c Edit qty check box
-        self.eqty = QtGui.QCheckBox(self.centralwidget)
-        self.eqty.setObjectName(_fromUtf8("eqty"))
+        self.eqty = QtWidgets.QCheckBox(self.centralwidget)
+        self.eqty.setObjectName("eqty")
         self.horizontalLayout.addWidget(self.eqty)
         self.verticalLayout_3.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 706, 25))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
+        self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
@@ -408,14 +402,14 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
 else:
-    class inventory_management_window(QtGui.QMainWindow, Ui_MainWindow):
+    class inventory_management_window(QtWidgets.QMainWindow, Ui_MainWindow):
         ret = QtCore.pyqtSignal()
         def ret_login(self):
             self.ret.emit()

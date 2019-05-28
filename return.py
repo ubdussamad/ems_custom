@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'return.ui'
-#
-# Created by: PyQt4 UI code generator 4.11.4
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 import base64
 try:
@@ -125,20 +118,19 @@ class Ui_Dialog(object):
                 self.ttable.setRowCount(0)
                 return
             self.data = []
-            print()
-            for i in rows[0]:
-                if len(i) > 2:
-                    self.data.append(decrypt(i).strip('\n').split('&sep'))
+            for i in rows:
+                self.data.append(decrypt(i[0]).split('&sep'))
+            self.table_headers = ['Transac Id','Customer Id','Time','Amount','Products','PT']
 
         else:
             # Incase it's not an internal search
             self.data = self.lib.lmm.search(str(hkey))
+            self.table_headers = ['Transac Id','Time','Customer Id','Amount','Products','Sold By']
 
         self.ttable.setRowCount(0)
         self.ttable.setColumnCount(0)
         self.ttable.setColumnCount(6)
         self.ttable.setRowCount(len(self.data))
-        self.table_headers = ['Transac Id','Time','Customer Id','Amount','Products','Sold By']
         self.ttable.setHorizontalHeaderLabels(self.table_headers)
         self.ttable.setAlternatingRowColors(True)
         self.ttable.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)

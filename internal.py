@@ -62,6 +62,7 @@ class detail_diag(QtWidgets.QDialog):
     def __init__(self,d, parent=None):
         super(detail_diag, self).__init__(parent)
         self.setWindowTitle(_translate("MainWindow", "Details for Tid: %s"%(d[0],), None))
+        self.resize(600,700)
         #Format
         #['1551352557.0', 'Thu Feb 28 16:45:57 2019', 'Random', '544.5799999999999', 'GREEN_NORMAL|10.000|25.000|13.000|,RED_NORMAL|9.750|24.000|12.000|']
         with open('resources/recipt_popup_format2.html') as f:
@@ -121,9 +122,9 @@ class Ui_MainWindow(object):
         some.lmm.cursor.execute('SELECT checksum from config_checksum ORDER BY timestamp DESC LIMIT 100000')
         rows = some.lmm.cursor.fetchall()
 
-        for i in rows[0]:
-            if len(i) > 2:
-                self.__data.append(decrypt(i).strip('\n').split('&sep'))
+        for i in rows:
+                self.__data.append(decrypt(i[0]).split('&sep'))
+        print(self.__data)
         return
     def update_routine ( self ):
         # Check auth
@@ -180,9 +181,12 @@ class Ui_MainWindow(object):
             return
 
 
-        for i in rows[0]:
-            if len(i) > 2:
-                self.history_tuple.append(decrypt(i).strip('\n').split('&sep'))
+        # for i in rows:
+        #     if len(i) > 2:
+        #         self..append(decrypt(i[0]).strip('\n').split('&sep'))
+
+        for i in rows:
+            self.history_tuple.append(decrypt(i[0]).split('&sep'))
 
 
 

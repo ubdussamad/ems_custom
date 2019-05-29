@@ -21,6 +21,7 @@ except AttributeError:
 class detail_diag(QtWidgets.QDialog):
     def __init__(self,d, parent=None):
         super(detail_diag, self).__init__(parent)
+        self.resize(500, 350)
         self.setWindowTitle(_translate("MainWindow", "Details for Tid: %s"%(d[0],), None))
         #Format
         #['1551352557.0', 'Thu Feb 28 16:45:57 2019', 'Random', '544.5799999999999', 'GREEN_NORMAL|10.000|25.000|13.000|,RED_NORMAL|9.750|24.000|12.000|']

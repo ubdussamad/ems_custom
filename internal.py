@@ -16,7 +16,7 @@ class Printer(QtWidgets.QDialog):
     def __init__(self):
         super(Printer, self).__init__()
         self.setWindowTitle('Recipt Preview')
-        self.resize(1030, 629)
+        self.resize(500, 350)
         self.editor = QtWidgets.QTextEdit(self)
         self.editor.textChanged.connect(self.handleTextChanged)
         self.buttonPrint = QtWidgets.QPushButton('Print', self)

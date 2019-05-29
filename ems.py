@@ -145,7 +145,15 @@ def main():
     app = QtWidgets.QApplication.instance()
     if app is None:
         app = QtWidgets.QApplication(sys.argv)
-        
+
+
+    sys._excepthook = sys.excepthook 
+    def exception_hook(exctype, value, traceback):
+        print(exctype, value, traceback)
+        sys._excepthook(exctype, value, traceback) 
+        sys.exit(1) 
+    sys.excepthook = exception_hook
+
     wa = XMainWindow()
     wb = central_control_window(user=USER)
     wb.ret.connect(wa.show_decorator)

@@ -302,16 +302,20 @@ class Ui_EMS(object):
             print("Something else is pressed!")
 
     def bought_rate(self):
-        indexes = [i.row() for i in self.cart.selectionModel().selectedRows()]
-        index = indexes[0]
-        table = some.display_ivn()
-        for i in table:
-            if i[0]== self.cart.item(index,0).text():
-                self.statusbar.showMessage("%s : Bought Rate: %d Rs/Kgs , Taxed Rate: %.2f Rs/Kgs"%\
-                    (i[0],i[7],i[3]*(1+(i[5]/100))),3000)
-                break
-        #\
-        #    (self.cart.item(index,0).text(),table[table.index(self.cart.item(index,0).text())][7]))
+        try:
+            indexes = [i.row() for i in self.cart.selectionModel().selectedRows()]
+            if len(indexes):
+                index = indexes[0]
+            else:
+                return
+            table = some.display_ivn()
+            for i in table:
+                if i[0]== self.cart.item(index,0).text():
+                    self.statusbar.showMessage("%s : Bought Rate: %d Rs/Kgs , Taxed Rate: %.2f Rs/Kgs"%\
+                        (i[0],i[7],i[3]*(1+(i[5]/100))),3000)
+                    break
+        except:
+            print("Bought Rate Locha!")
     def setupUi(self, EMS):
         EMS.setObjectName("EMS")
         EMS.resize(1030, 629)
@@ -608,6 +612,12 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     EMS = QtWidgets.QMainWindow()
+    sys._excepthook = sys.excepthook 
+    def exception_hook(exctype, value, traceback):
+        print(exctype, value, traceback)
+        sys._excepthook(exctype, value, traceback) 
+        sys.exit(1) 
+    sys.excepthook = exception_hook
     ui = Ui_EMS()
     ui.setupUi(EMS)
     EMS.show()

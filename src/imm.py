@@ -30,7 +30,7 @@ class imm ( object ):
             self.server.commit()
 
         elif u_type == 'append_stk':
-            # Decreasing the Quatity of stock of the specific product_id
+            # Increasing the Quatity of stock of the specific product_id
             self.cursor.execute('UPDATE ivn SET Quantity = Quantity + (?) WHERE P_id = (?)', (data[0] ,p_id))
             self.server.commit()
         elif u_type == 'del_product':

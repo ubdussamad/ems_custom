@@ -113,7 +113,7 @@ class Ui_EMS(object):
         self.query_ivn(self.ivn_sb.text())
     def borrow_checkout(self):
         try:
-            self.sanity_check()
+            self.sanity_check() # Sanity check, ensures 
         except:
             self.statusbar.showMessage("Invalid Values, Check Values in Cart!",2000)
             # This happens when user tries to enter invalid (non-numeric) rate or qty
